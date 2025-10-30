@@ -1,0 +1,35 @@
+/* Estilo para redondear bordes */
+.border-radius {
+    border: 1px solid #000;
+    /* Define el color y el grosor del borde */
+    border-radius: 50px;
+    /* Ajusta el valor para el redondeo deseado */
+    padding: 10px;
+    /* Espaciado interno */
+}
+
+.carga-container {
+    display: flex;
+    justify-content: center;
+    /* Centra los elementos horizontalmente */
+    gap: 5px;
+    /* Ajusta el espacio entre los inputs según sea necesario */
+    align-items: center;
+    /* Alinea los inputs y textos verticalmente */
+}
+
+.carga-input {
+    width: 50px;
+    /* Ajusta el tamaño del input */
+    text-align: center;
+    /* Centra el texto dentro del input */
+}
+
+.carga-text {
+    font-size: 12px;
+    /* Hace que el texto sea pequeño */
+    color: black;
+    /* Color discreto para el texto */
+    margin-right: 2px;
+    /* Espacio pequeño antes del input */
+}

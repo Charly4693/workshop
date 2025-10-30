@@ -7,7 +7,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Login</title>
     <link href="{{ asset('css/login.css') }}" rel="stylesheet">
-    <link rel="icon" href="{{ asset('img/sin fondo - copia_favicon.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('img/prometeo.png') }}" type="image/x-icon">
+    <!-- CSS -->
+    <!-- En el <head> -->
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}">
+
 </head>
 
 <body>
@@ -39,6 +43,11 @@
             <input type="submit" value="Acceder" class="mt-4">
         </form>
     </div>
+
+    <button class="btn btn-primary">Prueba</button>
+
+    <script src="{{ asset('bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
 </body>
 
 </html>

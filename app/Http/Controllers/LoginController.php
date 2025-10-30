@@ -15,7 +15,7 @@ class LoginController extends Controller
         $usuario = User::where('name', $request->name)->first();
         if (!$usuario || !Hash::check($request->password, $usuario->password)){
             $error = 'Usuario incorrecto';
-            return view('inicio', compact('error'));
+            return view('login', compact('error'));
         } else {
             return redirect()->route('companies.index');
         }

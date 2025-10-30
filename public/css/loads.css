@@ -1,0 +1,68 @@
+.table-primary {
+    background-color: blue !important;
+}
+
+.table-success {
+    background-color: green !important;
+}
+
+.table-danger {
+    background-color: red !important;
+    position: relative;
+}
+
+.table-danger::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 2px;
+    background-color: red;
+    z-index: 1;
+}
+
+.table-warning {
+    background-color: yellow !important;
+    position: relative;
+}
+
+.table-warning::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 2px;
+    background-color: red;
+    z-index: 1;
+}
+
+.form-control-sm {
+    width: 100%;
+    text-align: center;
+    /* Centra el texto dentro del input */
+
+}
+
+.state-text {
+    visibility: inline !important;
+}
+
+
+
+.state-text.hidden {
+    visibility: none !important;
+}
+
+.alert-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    /* Para que se vea por encima de otros elementos */
+}
+
+.btn-none {
+    display: none;
+}
