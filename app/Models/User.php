@@ -44,4 +44,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function deliveryNotes()
+    {
+        return $this->hasMany(DeliveryNote::class, 'user_id');
+    }
 }
