@@ -1,10 +1,5 @@
 
-
-
-
-
-
-@extends('layouts.app')
+@extends('plantilla.plantilla')
 
 @section('content')
 <div class="container">

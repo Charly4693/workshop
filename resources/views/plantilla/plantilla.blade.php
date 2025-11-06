@@ -10,6 +10,7 @@
     <!-- En <head> -->
     <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}"> {{-- Bootstrap global --}}
     <link rel="stylesheet" href="{{ asset('/resources/css/app.css') }}"> {{-- Tu CSS global --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <title>@yield('titulo')</title>
 
@@ -43,49 +44,79 @@
 
     <div class="d-flex">
         <!-- Sidebar -->
-        <nav class="navbar navbar-expand-sm navbar-dark bg-dark flex-column sidebar d-none d-md-flex"
-            style="width: 20%;">
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark flex-column sidebar d-none d-md-flex">
             <div class="container-fluid d-flex flex-column align-items-start overflow-auto hideScroll">
                 <div class="sidebar-logo">
-                    <a href="/"><img src="{{ asset('img/sin fondo - copia.png') }}" alt="Logo"></a>
+                    <a href="/"><img src="{{ asset('img/prometeo.png') }}" alt="Logo"></a>
                 </div>
                 <ul class="navbar-nav flex-column w-100" id="sidebarMenu">
 
                     {{-- Asegúrate de tener $companies y $delegations definidos antes de renderizar este layout
                          (por ejemplo en un Composer View o pasándolos desde el controlador) --}}
 
-                    @if (auth()->user()->hasAnyRole(['Super Admin']))
-                        <li class="nav-item w-100">
-                            <a class="nav-link" href="#companiasCollapse" data-bs-toggle="collapse"
-                                aria-expanded="false" data-bs-target="#companiasCollapse">
-                                <i class="bi bi-square-fill"></i> Compañías
-                            </a>
-                            <div class="collapse" id="companiasCollapse" data-bs-parent="#sidebarMenu">
-                                <ul class="navbar-nav flex-column ms-3">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('companies.show', 2) }}">
-                                            <i class="bi bi-circle-square"></i> Mi Compañía
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('companies.index') }}">
-                                            <i class="bi bi-plus-circle"></i> Crear compañia
-                                        </a>
-                                    </li>
-                                    @foreach ($companies as $company)
-                                        @if ($company->id !== 2)
-                                            <li class="nav-item">
-                                                <a class="nav-link"
-                                                    href="{{ route('external-licences.show', $company->id) }}">
-                                                    <i class="bi bi-circle-square"></i> Licencias {{ $company->name }}
-                                                </a>
-                                            </li>
-                                        @endif
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </li>
-                    @endif
+                    <li class="nav-item w-100">
+                        <a class="nav-link" href="#fabricasCollapse" data-bs-toggle="collapse" aria-expanded="false"
+                            data-bs-target="#fabricasCollapse">
+                            <i class="bi bi-building"></i> Fábricas
+                        </a>
+                        <div class="collapse" id="fabricasCollapse" data-bs-parent="#sidebarMenu">
+                            <ul class="navbar-nav flex-column ms-3">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="">
+                                        <i class="bi bi-list"></i> Ver fábricas
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="">
+                                        <i class="bi bi-plus-circle"></i> Crear fábrica
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item w-100">
+                        <a class="nav-link" href="#materialCollapse" data-bs-toggle="collapse" aria-expanded="false"
+                            data-bs-target="#materialCollapse">
+                            <i class="bi bi-box"></i> Material
+                        </a>
+                        <div class="collapse" id="materialCollapse" data-bs-parent="#sidebarMenu">
+                            <ul class="navbar-nav flex-column ms-3">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="">
+                                        <i class="bi bi-list"></i> Ver material
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="">
+                                        <i class="bi bi-plus-circle"></i> Añadir material
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item w-100">
+                        <a class="nav-link" href="#pedidosCollapse" data-bs-toggle="collapse" aria-expanded="false"
+                            data-bs-target="#pedidosCollapse">
+                            <i class="bi bi-basket"></i> Pedidos
+                        </a>
+                        <div class="collapse" id="pedidosCollapse" data-bs-parent="#sidebarMenu">
+                            <ul class="navbar-nav flex-column ms-3">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="">
+                                        <i class="bi bi-list"></i> Ver pedidos
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="">
+                                        <i class="bi bi-plus-circle"></i> Crear pedido
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
 
                     <!-- ... resto de tu menú tal cual ... -->
 
@@ -93,37 +124,19 @@
             </div>
         </nav>
 
-        <div class="w-100">
-            <div class="container d-flex justify-content-between pb-0">
-                <div class="pb-0 text-start">
-                    @auth
-                        <div>Bienvenido, {{ auth()->user()->name }}</div>
-                    @endauth
-                </div>
-                <div class="pb-0 text-start d-none d-md-block">
-                    <form action="{{ route('logout') }}" method="POST" style="d-inline-block">
-                        @csrf
-                        <button type="submit" class="border-0 text-primary text-decoration-underline">Salir</button>
-                    </form>
-                </div>
-            </div>
-
-            @if (Cache::has('confirmation_required') && Cache::get('confirmation_required'))
-                <div class="alert alert-warning d-flex justify-content-between align-items-center">
-                    <span>{{ Cache::get('confirmation_message') }}</span>
-                    @php
-                        $localId = Cache::get('localId');
-                        $serialNumber = Cache::get('serialNumber');
-                    @endphp
-                    @if (!request()->is('confirm-serial-change/*'))
-                        <a href="{{ url('/confirm-serial-change' . '/' . $localId . '/' . $serialNumber) }}"
-                            class="btn btn-warning">Confirmar</a>
-                    @endif
-                </div>
-            @endif
-
-            @yield('contenido')
+        <div class="topbar d-flex justify-content-between align-items-center px-4">
+            @auth
+                <span class="welcome-text">Bienvenido, {{ auth()->user()->name }}</span>
+            @endauth
+            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                @csrf
+                <button type="submit" class="logout-btn">Salir</button>
+            </form>
         </div>
+
+
+        @yield('contenido')
+    </div>
     </div>
 
     <footer class="d-md-none fixed-bottom">
@@ -138,7 +151,7 @@
                 </form>
                 <a href="" onclick="window.location.reload();" class="footer-links"><i
                         class="bi bi-arrow-clockwise"></i></a>
-                <a href="{{ route('delegations.index') }}" class="footer-links"><i class="bi bi-house"></i></a>
+                <a href="" class="footer-links"><i class="bi bi-house"></i></a>
             </div>
         </div>
     </footer>

@@ -1,3 +1,4 @@
+@import "bootstrap-icons/font/bootstrap-icons.css";
 
 @font-face {
     font-family: "Atkinson";
@@ -5,7 +6,11 @@
 }
 
 body {
-    background-image: url("../img/3.jpeg");
+    height: 100vh;
+    font-family: 'Atkinson';
+    background-color: #eeeeee;
+    /* color de respaldo */
+    background-image: url("../img/2.png");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -14,24 +19,39 @@ body {
 
 
 .titleMoneys {
-    background-color: #dd5746; /* Color de fondo */
-    color: white; /* Texto en blanco */
-    border-radius: 10px; /* Bordes redondeados */
-    padding: 8px 15px; /* Espaciado interno */
-    width: 50%; /* Ocupa el 50% del ancho */
-    max-width: 400px; /* Evita que sea demasiado grande */
-    min-width: 200px; /* Evita que sea demasiado pequeño */
-    text-align: center; /* Centra el texto dentro del h4 */
-    margin: 0 auto; /* Centra el h4 horizontalmente */
+    background-color: #dd5746;
+    /* Color de fondo */
+    color: white;
+    /* Texto en blanco */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    padding: 8px 15px;
+    /* Espaciado interno */
+    width: 50%;
+    /* Ocupa el 50% del ancho */
+    max-width: 400px;
+    /* Evita que sea demasiado grande */
+    min-width: 200px;
+    /* Evita que sea demasiado pequeño */
+    text-align: center;
+    /* Centra el texto dentro del h4 */
+    margin: 0 auto;
+    /* Centra el h4 horizontalmente */
 }
 
 .titleSecondaryMoney {
-    background-color: #ffc37082; /* Color de fondo */
-    color: black; /* Texto en blanco */
-    border-radius: 10px; /* Bordes redondeados */
-    padding: 5px 10px; /* Espaciado interno */
-    display: inline-block; /* Ajusta el tamaño al contenido */
-    text-align: center; /* Centra el texto dentro del h4 */
+    background-color: #ffc37082;
+    /* Color de fondo */
+    color: black;
+    /* Texto en blanco */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    padding: 5px 10px;
+    /* Espaciado interno */
+    display: inline-block;
+    /* Ajusta el tamaño al contenido */
+    text-align: center;
+    /* Centra el texto dentro del h4 */
 }
 
 
@@ -40,21 +60,15 @@ body {
     margin: 0;
 }
 
-h1{
+h1 {
     margin: 0;
-}
-
-body {
-    height: 100vh;
-    font-family:'Atkinson' ;
-    background-color: #eeeeee;
 }
 
 .container {
     padding-bottom: 5%;
 }
 
-.isla-list{
+.isla-list {
     background-color: #ffc37082;
     border-radius: 20px;
 }
@@ -64,41 +78,41 @@ body {
     margin-right: 0.5rem;
 }
 
-.btn-ttl{
+.btn-ttl {
     background-color: #dd5746;
     border: 0;
     padding: 0;
 }
 
-.btn-ttl:hover{
+.btn-ttl:hover {
     background-color: #e49d32;
 }
 
-.btn-inf{
+.btn-inf {
     border: 0;
     padding: 0;
 }
 
-.btn-inf:hover{
+.btn-inf:hover {
     background-color: #0d4e66;
 }
 
-.ttl{
+.ttl {
     background-color: #ffc370d2;
     border-radius: 20px;
     color: white;
 }
 
-.w-35{
+.w-35 {
     width: 35%;
 }
 
-.btn-danger{
+.btn-danger {
     background-color: #dd5746;
     border: 0;
 }
 
-th{
+th {
     background-color: #ffc37082 !important;
     color: black !important;
     font-weight: 500;
@@ -108,33 +122,34 @@ th{
     width: 0;
 }
 
-.nav-link{
+.nav-link {
     color: white;
 }
 
-.nav-link:hover{
+.nav-link:hover {
     color: white;
 }
 
-.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active{
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
     background-color: #ffc470;
 }
 
-#myTab :first-child button{
+#myTab :first-child button {
     border-top-left-radius: 15px;
     border-bottom-left-radius: 15px;
 }
 
-#myTab :last-child button{
+#myTab :last-child button {
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
 }
 
-#myTab li{
+#myTab li {
     margin-bottom: 15px;
 }
 
-#myTab{
+#myTab {
     margin-top: 15px;
 
     overflow-x: auto;
@@ -143,51 +158,51 @@ th{
     scrollbar-width: none;
 }
 
-.nav-tabs .nav-link{
+.nav-tabs .nav-link {
     border-radius: 0;
 }
 
-.btn-dark{
+.btn-dark {
     border: 0;
 }
 
-.btn-warning{
+.btn-warning {
     background-color: #4793af;
-    border:0;
+    border: 0;
     color: white;
 }
 
-.btn-warning:disabled{
+.btn-warning:disabled {
     background-color: #4793af;
-    border:0;
+    border: 0;
     color: white;
     opacity: 0.65;
 }
 
-.btn-warning:hover{
+.btn-warning:hover {
     background-color: #0d4e66;
     color: white;
 }
 
-.modal-content{
+.modal-content {
     background-color: #ffc470;
 }
 
-.modal-header{
+.modal-header {
     background-color: #dd5746;
     border: 0;
     color: white;
 }
 
-.modal-footer{
+.modal-footer {
     border: 0 !important;
 }
 
-#headerAll{
+#headerAll {
     height: 20%;
 }
 
-#colorToast{
+#colorToast {
     background-color: rgb(254, 121, 121);
     border-color: red;
 }
@@ -204,6 +219,7 @@ th{
 .izquierda {
     margin: .4em;
 }
+
 .derecha {
     background-color: whitesmoke;
     border-radius: .4em;
@@ -222,6 +238,7 @@ th{
     padding: .8em;
     width: 58.5em;
 }
+
 #escribe {
     grid-column: 4/5;
     grid-row: 1/2;
@@ -237,15 +254,20 @@ th{
     grid-column: 1/2;
     grid-row: 1/2;
 }
+
 #maquinaB {
     grid-column: 2/3;
     grid-row: 1/2;
 }
+
 #maquinaC {
     grid-column: 3/4;
     grid-row: 1/2;
 }
-#maquinaA, #maquinaB, #maquinaC {
+
+#maquinaA,
+#maquinaB,
+#maquinaC {
     border: 2px solid rgb(207, 15, 15);
     border-radius: .3em;
     margin: .4em;
@@ -254,12 +276,13 @@ th{
     max-width: 14em;
 }
 
-#valorHopper, #valorRecarga {
+#valorHopper,
+#valorRecarga {
     height: 28px;
     width: 8em;
 }
 
-#footercalc{
+#footercalc {
     background-color: rgb(199, 35, 35);
     border-radius: 1em;
     width: 58.5em;
@@ -268,19 +291,19 @@ th{
     margin-top: 5px;
 }
 
-.small-input{
+.small-input {
     width: 4em;
 }
 
-.w-md-50{
+.w-md-50 {
     width: 50%;
 }
 
-.btn{
+.btn {
     border: 0;
 }
 
-.w-80{
+.w-80 {
     width: 80% !important;
 }
 
@@ -292,9 +315,11 @@ th{
 .fade-transition {
     transition: opacity 0.5s ease;
 }
+
 .fade-hidden {
     opacity: 0;
 }
+
 .fade-visible {
     opacity: 1;
 }
@@ -302,16 +327,16 @@ th{
 
 @media only screen and (max-width: 768px) {
 
-    .btn{
+    .btn {
         font-size: 12pt;
     }
 
-    h1{
+    h1 {
         font-size: 35pt;
         margin-bottom: 0;
     }
 
-    h3{
+    h3 {
         font-weight: 400;
         font-size: 16pt;
     }
@@ -327,51 +352,51 @@ th{
         text-decoration: none;
     }
 
-    .linkText{
+    .linkText {
         text-decoration: none;
         color: black;
     }
 
-    .box-title{
+    .box-title {
         background-color: #f5f5f6;
-        border-top-left-radius:10px;
-        border-top-right-radius:10px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
     }
 
-    .box-subtitle{
+    .box-subtitle {
         background-color: #c0c0c0;
-        border-bottom-left-radius:20px;
-        border-bottom-right-radius:20px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
     }
 
-    .box-subtitle button{
+    .box-subtitle button {
         text-decoration: none;
         color: black;
     }
 
-    #delegationTitle{
+    #delegationTitle {
         background-color: #f5f5f6;
-        border-radius:10px;
+        border-radius: 10px;
     }
 
-    .container{
+    .container {
         padding-bottom: 100px;
     }
 
-    .titleLink{
+    .titleLink {
         text-decoration: none;
         color: white;
     }
 
-    table{
+    table {
         border-color: rgb(101, 101, 101) !important;
     }
 
-    td{
+    td {
         font-size: 9.5pt;
     }
 
-    .ttl-dta{
+    .ttl-dta {
         background-color: #8b322c;
         border-top-left-radius: 20px;
         border-top-right-radius: 20px;
@@ -384,24 +409,31 @@ th{
         grid-template-rows: repeat(2, 1fr);
         gap: 10px;
     }
+
     #maquinaA {
         grid-column: 1 / 2;
         grid-row: 1 / 2;
     }
+
     #maquinaB {
         grid-column: 2 / 3;
         grid-row: 1 / 2;
     }
+
     #maquinaC {
         grid-column: 1 / 2;
         grid-row: 2 / 3;
     }
-    #maquinaA, #maquinaB, #maquinaC {
+
+    #maquinaA,
+    #maquinaB,
+    #maquinaC {
         padding: .8em;
         width: 100%;
         max-width: 100%;
         margin: 0;
     }
+
     #global {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -412,6 +444,7 @@ th{
         max-width: 100%;
         margin-top: 5px;
     }
+
     #escribe {
         grid-column: 2 / 3;
         grid-row: 2 / 3;
@@ -425,43 +458,44 @@ th{
         max-width: 100%;
     }
 
-    .btnCalc{
+    .btnCalc {
         font-size: 10pt;
     }
 
-    #valorHopper, #valorRecarga {
+    #valorHopper,
+    #valorRecarga {
         height: 28px;
     }
 
-    .w-md-50{
+    .w-md-50 {
         width: 100%;
     }
 
-    .w-xs-100{
+    .w-xs-100 {
         width: 100% !important;
     }
 
-    .smll-btn{
+    .smll-btn {
         font-size: 10pt;
     }
 
-    .w-250{
+    .w-250 {
         width: 250%;
     }
 
-    .d-xs-flex{
+    .d-xs-flex {
         display: flex;
     }
 
-    .h-xs-75{
+    .h-xs-75 {
         height: 75%;
     }
 
-    .w-xs-200{
+    .w-xs-200 {
         width: 200% !important;
     }
 
-    .w-xs-250{
+    .w-xs-250 {
         width: 250% !important;
     }
 }
@@ -534,4 +568,70 @@ th{
     }
 }
 
+/* === Ancho del menú lateral (fácil de ajustar) === */
+:root {
+    --sidebar-w: 220px;
+    /* 200 / 220 / 240... */
+}
 
+/* Sidebar fino usando la variable */
+.sidebar {
+    width: var(--sidebar-w);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+/* Barra superior completa (única definición) */
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* móvil: arranca a 0 */
+    width: 100%;
+    /* móvil: full width */
+    background-color: #212529;
+    color: white;
+    height: 38px;
+    /* fina */
+    font-size: 0.9rem;
+    padding: 0 1.5rem;
+    z-index: 1050;
+}
+
+/* En pantallas md+ la topbar empieza donde termina el sidebar */
+@media (min-width: 768px) {
+    .topbar {
+        left: var(--sidebar-w);
+        width: calc(100% - var(--sidebar-w));
+
+    }
+}
+
+/* Texto de bienvenida (único) */
+.welcome-text {
+    color: #fff;
+    font-weight: 500;
+}
+
+/* Botón salir minimalista (único) */
+.logout-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    text-decoration: underline;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0;
+    transition: opacity 0.2s ease;
+}
+
+.logout-btn:hover {
+    opacity: 0.8;
+}
+
+/* Empuje solo para el contenido (no para la sidebar) */
+.main-content {
+    padding-top: 38px;
+    /* = altura de la topbar */
+}
