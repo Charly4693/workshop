@@ -9,9 +9,7 @@
 
     <!-- En <head> -->
     <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}"> {{-- Bootstrap global --}}
-    <link rel="stylesheet" href="{{ asset('/resources/css/app.css') }}"> {{-- Tu CSS global --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <title>@yield('titulo')</title>
 
     @yield('css') <!-- CSS específico de la vista -->
@@ -57,20 +55,20 @@
                     <li class="nav-item w-100">
                         <a class="nav-link" href="#fabricasCollapse" data-bs-toggle="collapse" aria-expanded="false"
                             data-bs-target="#fabricasCollapse">
-                            <i class="bi bi-building"></i> Fábricas
+                            <i class="bi bi-building"></i> Fabricante
                         </a>
                         <div class="collapse" id="fabricasCollapse" data-bs-parent="#sidebarMenu">
                             <ul class="navbar-nav flex-column ms-3">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="">
-                                        <i class="bi bi-list"></i> Ver fábricas
+                                    <a class="nav-link" href="{{ route('factories.index') }}">
+                                        <i class="bi bi-list"></i> Ver Fabricante
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="">
-                                        <i class="bi bi-plus-circle"></i> Crear fábrica
+                                <!--<li class="nav-item">
+                                    <a class="nav-link" href="{{ route('factories.create') }}">
+                                        <i class="bi bi-plus-circle"></i> Crear Fabricante
                                     </a>
-                                </li>
+                                </li>-->
                             </ul>
                         </div>
                     </li>
@@ -83,15 +81,15 @@
                         <div class="collapse" id="materialCollapse" data-bs-parent="#sidebarMenu">
                             <ul class="navbar-nav flex-column ms-3">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="">
+                                    <a class="nav-link" href="{{ route('spareparts.index') }}">
                                         <i class="bi bi-list"></i> Ver material
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="">
+                                <!--<li class="nav-item">
+                                    <a class="nav-link" href="{{ route('spareparts.create') }}">
                                         <i class="bi bi-plus-circle"></i> Añadir material
                                     </a>
-                                </li>
+                                </li>-->
                             </ul>
                         </div>
                     </li>
@@ -104,15 +102,15 @@
                         <div class="collapse" id="pedidosCollapse" data-bs-parent="#sidebarMenu">
                             <ul class="navbar-nav flex-column ms-3">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="">
+                                    <a class="nav-link" href="{{ route('deliverynotes.index') }}">
                                         <i class="bi bi-list"></i> Ver pedidos
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="">
+                                <!--<li class="nav-item">
+                                    <a class="nav-link" href="{{ route('deliverynotes.create') }}">
                                         <i class="bi bi-plus-circle"></i> Crear pedido
                                     </a>
-                                </li>
+                                </li>-->
                             </ul>
                         </div>
                     </li>

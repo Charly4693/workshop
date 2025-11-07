@@ -24,6 +24,13 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 
+            // Relación opcional con la tabla bars
+            $table->foreignId('bar_id')
+                ->nullable()
+                ->constrained('bars')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+
             $table->string('identificador');
 
             // Definir un campo tipo que indica si es parent (1) o roulette (2)

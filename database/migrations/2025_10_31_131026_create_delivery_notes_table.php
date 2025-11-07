@@ -28,6 +28,11 @@ return new class extends Migration
                 ->constrained('locals')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->foreignId('bar_id')
+                ->nullable()
+                ->constrained('bars')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->foreignId('machine_id')
                 ->nullable()
                 ->constrained('machines')
@@ -38,6 +43,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->text('comment')->nullable();
             $table->timestamps();
         });
     }

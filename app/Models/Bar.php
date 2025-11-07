@@ -2,18 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Machine;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Local extends Model
+class Bar extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
-        'dbconection',
-        'idMachines',
-    ];
-
-    protected $casts = [
-        'dbconection' => 'array',
     ];
 
     public function machines()

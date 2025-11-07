@@ -12,6 +12,7 @@ class DeliveryNote extends Model
         'local_id',
         'machine_id',
         'user_id',
+        'comment'
     ];
 
     public function user()
@@ -29,5 +30,10 @@ class DeliveryNote extends Model
     public function local()
     {
         return $this->belongsTo(Local::class, 'local_id');
+    }
+
+    public function bar()
+    {
+        return $this->belongsTo(Bar::class, 'bar_id');
     }
 }

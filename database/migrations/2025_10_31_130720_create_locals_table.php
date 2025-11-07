@@ -13,10 +13,6 @@ return new class extends Migration
     {// tenemos que hacer de que esta tabla lee la base de datos de prometo para que se sincronicen los locales
         Schema::create('locals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('factory_id')
-                ->constrained()
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->string('name');
             $table->json('dbconection');
             // clave foranea para que en cada local tenga un idMachine asociada

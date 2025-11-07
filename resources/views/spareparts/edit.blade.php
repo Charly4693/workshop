@@ -8,7 +8,7 @@
         <div class="col-md-8">
             <div class="card bg-dark text-light border-secondary shadow">
                 <div class="card-header text-info">
-                    {{ __('Dashboard') }}
+                    {{ __('Repuestos EDIT') }}
                 </div>
 
                 <div class="card-body">

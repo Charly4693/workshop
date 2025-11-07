@@ -18,26 +18,24 @@ body {
 }
 
 
-.titleMoneys {
-    background-color: #dd5746;
-    /* Color de fondo */
-    color: white;
-    /* Texto en blanco */
-    border-radius: 10px;
-    /* Bordes redondeados */
-    padding: 8px 15px;
-    /* Espaciado interno */
-    width: 50%;
-    /* Ocupa el 50% del ancho */
-    max-width: 400px;
-    /* Evita que sea demasiado grande */
-    min-width: 200px;
-    /* Evita que sea demasiado pequeño */
+.titlePrometeo {
+    background: linear-gradient(135deg, #0a1a2f, #003366, #0a1a2f);
+    color: #00aaff;
+    /* Azul neón suave */
+    font-family: 'Segoe UI', sans-serif;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 2px;
+    border-radius: 12px;
+    padding: 12px 20px;
+    width: fit-content;
     text-align: center;
-    /* Centra el texto dentro del h4 */
-    margin: 0 auto;
-    /* Centra el h4 horizontalmente */
+    margin: 50px auto 20px;
+    box-shadow: 0 0 15px rgba(0, 170, 255, 0.4);
+    border: 1px solid rgba(0, 170, 255, 0.5);
+    text-shadow: 0 0 10px rgba(0, 170, 255, 0.8);
 }
+
 
 .titleSecondaryMoney {
     background-color: #ffc37082;
@@ -634,4 +632,71 @@ th {
 .main-content {
     padding-top: 38px;
     /* = altura de la topbar */
+}
+
+/* Cabecera de la tabla estilo Prometeo */
+.table-prometeo thead {
+    background-color: #0056b3;
+    /* Azul Prometeo sólido */
+    color: #e6faff;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border-bottom: 3px solid #00bfff;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.table-prometeo thead th {
+    background: transparent;
+    /*text-shadow: 0 0 8px rgba(0, 191, 255, 0.6);*/
+    border-right: 1px solid rgba(0, 191, 255, 0.2);
+}
+
+.table-prometeo thead th:last-child {
+    border-right: none;
+}
+
+.table-prometeo tbody tr:hover {
+    background-color: rgba(0, 102, 204, 0.05);
+}
+
+
+
+/* Bordes y efecto hover sutil */
+.table-prometeo tbody tr:hover {
+    background-color: rgba(0, 51, 102, 0.05);
+}
+
+/* Botones coherentes con el tema */
+.btn-info {
+    background-color: #007bff;
+    border: none;
+}
+
+.btn-warning {
+    background-color: #e6a700;
+    border: none;
+    color: #000;
+}
+
+.btn-blue{
+    background-color: #4793af;
+    border:0;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #c82333;
+    border: none;
+}
+
+.btn-success {
+    background-color: #006633;
+    border: none;
+}
+
+/* Cabecera de la tarjeta */
+.card-header.text-info {
+    background: linear-gradient(90deg, #001a33, #003366);
+    color: #00aaff !important;
+    font-weight: bold;
 }
