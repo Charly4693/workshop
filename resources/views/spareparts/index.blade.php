@@ -1,106 +1,124 @@
 @extends('plantilla.plantilla')
+@section('titulo', 'Repuestos')
 
 @section('contenido')
     <div class="container text-center">
         <h1 class="titlePrometeo">Panel de control del taller</h1>
 
         <div class="row justify-content-center mt-4">
-            <div class="col-md-11">
-                <div class="card bg-white text-light border-secondary shadow">
+            <div class="col-md-10">
+                <div class="card bg-white text-light border-secondary shadow panel-prometeo">
                     <div class="card-header text-info">
-                        {{ __('Pedidos INDEX') }}
+                        {{ __('Repuestos INDEX') }}
                     </div>
 
                     <div class="card-body">
+                        @include('plantilla.messages')
+
                         @if (session('status'))
                             <div class="alert alert-success" role="alert">
                                 {{ session('status') }}
                             </div>
                         @endif
 
-                        <p class="mb-4 text-black">{{ __('Bienvenido al sistema del taller Prometeo!') }}</p>
+                        <div class="d-flex justify-content-end mb-3">
+                            <a href="{{ route('spareparts.create') }}" class="btn btn-blue">
+                                <i class="bi bi-plus-circle"></i> Añadir repuesto
+                            </a>
+                        </div>
 
-                        <!-- Tabla de Pedidos -->
                         <table class="table table-white table-hover table-bordered align-middle table-prometeo">
                             <thead class="table-secondary text-dark">
                                 <tr>
-                                    <th scope="col">Repuesto</th>
-                                    <th scope="col">Estado</th>
-                                    <th scope="col">Usuario</th>
-                                    <th scope="col">Local</th>
-                                    <th scope="col">Máquina</th>
-                                    <th scope="col">Acciones</th>
+                                    <th class="text-start">Repuesto</th>
+                                    <th>Fábrica</th>
+                                    <th>Estado</th>
+                                    <th style="width: 170px;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {{-- Ejemplo de fila temporal --}}
-                                <tr>
-                                    <td>Fuente de alimentación 12V</td>
-                                    <td><span class="badge bg-success">Entregado</span></td>
-                                    <td>Juan Pérez</td>
-                                    <td>Local 3</td>
-                                    <td>Ruleta Imperial</td>
-                                    <td>
-                                        <a href="#" class="btn btn-blue btn-sm me-1">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-success btn-sm me-1">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <form action="#" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
+                                @forelse ($spareparts as $spare)
+                                    <tr>
+                                        <td class="text-start">
+                                            <div class="fw-semibold">{{ $spare->name }}</div>
+                                        </td>
+                                        <td>{{ $spare->factory?->name ?? '-' }}</td>
+                                        <td>{{ $spare->state?->name ?? '-' }}</td>
+                                        <td>
+                                            <div class="d-flex justify-content-center gap-1">
+                                                {{-- Editar --}}
+                                                <a href="{{ route('spareparts.edit', $spare) }}"
+                                                    class="btn btn-outline-success" title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
 
-                                {{-- Aquí irán tus registros reales --}}
-                                {{--
-                            @foreach ($deliverynotes as $note)
-                                <tr>
-                                    <td>{{ $note->sparepart->name ?? '-' }}</td>
-                                    <td>
-                                        @if ($note->status === 'entregado')
-                                            <span class="badge bg-success">Entregado</span>
-                                        @elseif($note->status === 'pendiente')
-                                            <span class="badge bg-warning text-dark">Pendiente</span>
-                                        @else
-                                            <span class="badge bg-secondary">Desconocido</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ $note->user->name ?? '-' }}</td>
-                                    <td>{{ $note->local->name ?? '-' }}</td>
-                                    <td>{{ $note->machine->alias ?? '-' }}</td>
-                                    <td>
-                                        <a href="{{ route('deliverynotes.show', $note->id) }}" class="btn btn-info btn-sm me-1">
-                                            <i class="bi bi-eye"></i> Ver
-                                        </a>
-                                        <a href="{{ route('deliverynotes.edit', $note->id) }}" class="btn btn-warning btn-sm me-1">
-                                            <i class="bi bi-pencil"></i> Editar
-                                        </a>
-                                        <form action="{{ route('deliverynotes.destroy', $note->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="bi bi-trash"></i> Borrar
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                            --}}
+                                                {{-- Eliminar (modal global) --}}
+                                                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                                                    data-bs-target="#confirmDelete"
+                                                    data-action="{{ route('spareparts.destroy', $spare) }}"
+                                                    data-name="{{ $spare->name }}">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No hay repuestos registrados.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
 
-                        <a href="{{ route('deliverynotes.create') }}" class="btn btn-blue mt-3">
-                            <i class="bi bi-plus-circle"></i> Añadir pedido
-                        </a>
+                        <div class="d-flex justify-content-end">
+                            {{ $spareparts->links() }}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    {{-- Modal global de confirmación --}}
+    <div class="modal fade" id="confirmDelete" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-prometeo">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-6">Eliminar <span id="modal-item-name"></span></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body text-start">
+                    ¿Estás seguro de que quieres eliminar <strong id="modal-item-name-strong"></strong>?
+                    <br><small class="text-danger">Esta acción no se puede deshacer.</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form id="delete-form" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('js')
+    <script>
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('[data-bs-target="#confirmDelete"]');
+            if (!btn) return;
+
+            const name = btn.getAttribute('data-name') || '';
+            const action = btn.getAttribute('data-action') || '';
+
+            const modal = document.getElementById('confirmDelete');
+            modal.querySelector('#modal-item-name').textContent = name;
+            modal.querySelector('#modal-item-name-strong').textContent = name;
+            modal.querySelector('#delete-form').setAttribute('action', action);
+        });
+    </script>
 @endsection

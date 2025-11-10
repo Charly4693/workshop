@@ -634,6 +634,61 @@ th {
     /* = altura de la topbar */
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Cabecera de la tabla estilo Prometeo */
 .table-prometeo thead {
     background-color: #0056b3;
@@ -678,10 +733,21 @@ th {
     color: #000;
 }
 
-.btn-blue{
+.btn.btn-blue {
     background-color: #4793af;
-    border:0;
-    color: white;
+    color: #fff;
+    border: 0;
+}
+
+.btn.btn-blue:hover,
+.btn.btn-blue:focus {
+    background-color: #0d4e66;
+    color: #fff;
+}
+
+.btn.btn-blue:active {
+    background-color: #0c4156;
+    color: #fff;
 }
 
 .btn-danger {
@@ -695,8 +761,101 @@ th {
 }
 
 /* Cabecera de la tarjeta */
-.card-header.text-info {
+/*.card-header.text-info {
     background: linear-gradient(90deg, #001a33, #003366);
     color: #00aaff !important;
     font-weight: bold;
+    border-bottom: 2px solid rgba(0, 170, 255, 0.4);
+    text-shadow: 0 0 8px rgba(0, 170, 255, 0.7);
+}*/
+.card-header.text-info {
+    background: rgba(0, 26, 51, 0.75);
+    /* Azul oscuro con transparencia */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #00bfff !important;
+    font-weight: bold;
+    border-bottom: 2px solid rgba(0, 191, 255, 0.4);
+    text-shadow: 0 0 8px rgba(0, 191, 255, 0.6);
+}
+
+/* Panel contenedor translúcido estilo Prometeo */
+.panel-prometeo {
+    background: rgba(255, 255, 255, 0.8);
+    /* blanco con opacidad */
+    backdrop-filter: blur(8px);
+    /* efecto vidrio */
+    -webkit-backdrop-filter: blur(8px);
+    /* compatibilidad Safari */
+    border: 1px solid rgba(0, 123, 255, 0.25);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 3rem;
+    /* separa del título */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Modal con estilo Prometeo: cabecera idéntica a .card-header.text-info */
+.modal-prometeo .modal-content {
+    border: 1px solid rgba(0, 123, 255, 0.25);
+    border-radius: 16px;
+    /* igual que tu panel */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .10);
+    background-color: #fff;
+    overflow: hidden;
+    /* para que el header redondee igual */
+}
+
+.modal-prometeo .modal-header {
+    background: rgba(0, 26, 51, 0.75);
+    /* mismo azul oscuro translúcido */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #00bfff;
+    /* mismo cian */
+    font-weight: bold;
+    border-bottom: 2px solid rgba(0, 191, 255, 0.4);
+    text-shadow: 0 0 8px rgba(0, 191, 255, 0.6);
+}
+
+/* Título alineado al estilo Prometeo */
+.modal-prometeo .modal-title {
+    margin: 0;
+    letter-spacing: .5px;
+}
+
+/* Icono cerrar visible sobre fondo oscuro translúcido */
+.modal-prometeo .btn-close {
+    filter: invert(1) grayscale(100%);
+    opacity: 0.9;
+}
+
+.modal-prometeo .btn-close:hover {
+    opacity: 1;
+}
+
+/* Cuerpo y pie en blanco (quita amarillos heredados) */
+.modal-prometeo .modal-body,
+.modal-prometeo .modal-footer {
+    background-color: #fff !important;
+    color: #343a40;
+}
+
+/* Z-index para que nunca quede debajo */
+.modal,
+.modal.show {
+    z-index: 2000 !important;
+}
+
+.modal-backdrop.show {
+    z-index: 1990 !important;
+}
+
+.modal-prometeo small.text-danger {
+    color: #b93c49 !important;
+    /* rojo Bootstrap base */
+    font-weight: 500;
+    text-shadow: 0 0 4px rgba(200, 35, 51, 0.25);
+    /* brillo leve */
 }

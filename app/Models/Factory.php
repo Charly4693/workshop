@@ -10,8 +10,10 @@ class Factory extends Model
     protected $fillable = [
         'name',
         'address',
-        'telephone',
-        'city'
+        'phone',
+        'city',
+        'email',
+        'cif',
     ];
 
     public function locals()

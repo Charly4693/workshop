@@ -2,63 +2,82 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Factory;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class FactoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('factories.index');
+        $factories = Factory::orderBy('name')->paginate(10);;
+        return view('factories.index', compact('factories'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('factories.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        dd($request->all());
+        $validated = $request->validate([
+            'name'    => ['required', 'string', 'max:255'],
+            'address' => ['required', 'string', 'max:255'],
+            'city'    => ['required', 'string', 'max:100'],
+            'phone'   => ['nullable', 'string', 'max:50'],
+            'email'   => ['required', 'email', 'max:255', 'unique:factories,email'],
+            'cif'     => ['required', 'string', 'max:20', 'unique:factories,cif'],
+        ]);
+
+        Factory::create($validated);
+
+        return redirect()
+            ->route('factories.index')
+            ->with('status', 'Fábrica creada correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Factory $factory)
     {
-        //
+        return view('factories.edit', compact('factory'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Factory $factory)
     {
-        //
+        dd($request->all());
+
+        $validated = $request->validate([
+            'name'    => ['required', 'string', 'max:255'],
+            'address' => ['required', 'string', 'max:255'],
+            'city'    => ['required', 'string', 'max:100'],
+            'phone'   => ['nullable', 'string', 'max:50'],
+            'email'   => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('factories', 'email')->ignore($factory->id),
+            ],
+            'cif'     => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('factories', 'cif')->ignore($factory->id),
+            ],
+        ]);
+
+        $factory->update($validated);
+
+        return redirect()
+            ->route('factories.index')
+            ->with('status', 'Fábrica actualizada correctamente.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Factory $factory)
     {
-        //
-    }
+        //dd($factory);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $factory->delete();
+        return redirect()->route('factories.index')->with('status', 'Fábrica eliminada correctamente.');
     }
 }

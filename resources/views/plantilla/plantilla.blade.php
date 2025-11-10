@@ -55,18 +55,18 @@
                     <li class="nav-item w-100">
                         <a class="nav-link" href="#fabricasCollapse" data-bs-toggle="collapse" aria-expanded="false"
                             data-bs-target="#fabricasCollapse">
-                            <i class="bi bi-building"></i> Fabricante
+                            <i class="bi bi-building"></i> Fabricantes
                         </a>
                         <div class="collapse" id="fabricasCollapse" data-bs-parent="#sidebarMenu">
                             <ul class="navbar-nav flex-column ms-3">
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('factories.index') }}">
-                                        <i class="bi bi-list"></i> Ver Fabricante
+                                        <i class="bi bi-list"></i> Ver Fabricantes
                                     </a>
                                 </li>
                                 <!--<li class="nav-item">
                                     <a class="nav-link" href="{{ route('factories.create') }}">
-                                        <i class="bi bi-plus-circle"></i> Crear Fabricante
+                                        <i class="bi bi-plus-circle"></i> Crear Fabricantes
                                     </a>
                                 </li>-->
                             </ul>
@@ -74,20 +74,20 @@
                     </li>
 
                     <li class="nav-item w-100">
-                        <a class="nav-link" href="#materialCollapse" data-bs-toggle="collapse" aria-expanded="false"
-                            data-bs-target="#materialCollapse">
-                            <i class="bi bi-box"></i> Material
+                        <a class="nav-link" href="#repuestoCollapse" data-bs-toggle="collapse" aria-expanded="false"
+                            data-bs-target="#repuestoCollapse">
+                            <i class="bi bi-box"></i> Repuestos
                         </a>
-                        <div class="collapse" id="materialCollapse" data-bs-parent="#sidebarMenu">
+                        <div class="collapse" id="repuestoCollapse" data-bs-parent="#sidebarMenu">
                             <ul class="navbar-nav flex-column ms-3">
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('spareparts.index') }}">
-                                        <i class="bi bi-list"></i> Ver material
+                                        <i class="bi bi-list"></i> Ver repuestos
                                     </a>
                                 </li>
                                 <!--<li class="nav-item">
                                     <a class="nav-link" href="{{ route('spareparts.create') }}">
-                                        <i class="bi bi-plus-circle"></i> Añadir material
+                                        <i class="bi bi-plus-circle"></i> Añadir repuesto
                                     </a>
                                 </li>-->
                             </ul>
@@ -154,10 +154,17 @@
         </div>
     </footer>
 
+
+
+    <!-- JS al final -->
+    <script src="{{ asset('bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+    {{-- Scripts específicos de cada vista --}}
     @yield('js')
 
-    <!-- Antes de </body> -->
-    <script src="{{ asset('bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    {{-- Pila de scripts (si usas @push('scripts')) --}}
+    @stack('scripts')
+
 </body>
 
 </html>

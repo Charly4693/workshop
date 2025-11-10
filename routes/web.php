@@ -25,7 +25,7 @@ Auth::routes([
 Route::get('/', function () {
     $error = session()->get('error');
     if (Auth::check()) {
-        return redirect()->route('companies.index')->with('error', $error);
+        return redirect()->route('home')->with('error', $error);
     }
     Log::info($error);
 
@@ -37,6 +37,6 @@ Auth::routes();
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::resource('/factories', FactoryController::class);
-Route::resource('/deliverynotes', SparePartController::class);
-Route::resource('/spareparts', DeliveryNoteController::class);
+Route::resource('/deliverynotes', DeliveryNoteController::class);
+Route::resource('/spareparts', SparePartController::class);
 

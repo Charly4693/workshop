@@ -2,63 +2,79 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Factory;
+use App\Models\State;
+use App\Models\SparePart;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SparePartController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('spareparts.index');
+        // Traemos fábrica y estado para no hacer N+1
+        $spareparts = SparePart::with(['factory:id,name', 'state:id,name'])
+                        ->orderBy('name')
+                        ->paginate(10);
+
+        return view('spareparts.index', compact('spareparts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $factories = Factory::orderBy('name')->get(['id', 'name']);
+        $states    = State::orderBy('name')->get(['id', 'name']);
+        return view('spareparts.create', compact('factories', 'states'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        dd($request->all());
+        $validated = $request->validate([
+            'name'       => ['required','string','max:255'],
+            'factory_id' => ['required','exists:factories,id'],
+            'state_id'   => ['nullable','exists:states,id'],
+        ]);
+
+        SparePart::create($validated);
+
+        return redirect()
+            ->route('spareparts.index')
+            ->with('status', 'Repuesto creado correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(SparePart $sparepart)
     {
-        //
+        $factories = Factory::orderBy('name')->get(['id','name']);
+        $states    = State::orderBy('name')->get(['id','name']);
+        return view('spareparts.edit', compact('sparepart','factories','states'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, SparePart $sparepart)
     {
-        //
+        dd($request->all());
+
+        $validated = $request->validate([
+            'name'       => ['required','string','max:255'],
+            'factory_id' => ['required','exists:factories,id'],
+            'state_id'   => ['nullable','exists:states,id'],
+        ]);
+
+        $sparepart->update($validated);
+
+        return redirect()
+            ->route('spareparts.index')
+            ->with('status', 'Repuesto actualizado correctamente.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(SparePart $sparepart)
     {
-        //
-    }
+        dd($sparepart);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $sparepart->delete();
+
+        return redirect()
+            ->route('spareparts.index')
+            ->with('status', 'Repuesto eliminado correctamente.');
     }
 }

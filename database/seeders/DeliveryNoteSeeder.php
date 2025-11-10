@@ -27,7 +27,7 @@ class DeliveryNoteSeeder extends Seeder
         $bars = class_exists(Bar::class) ? Bar::pluck('id')->toArray() : [];
 
         // Crea 10 notas de entrega aleatorias
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             DeliveryNote::create([
                 'spare_part_id' => $spareParts ? fake()->randomElement($spareParts) : null,
                 'state_id' => $states ? fake()->randomElement($states) : null,
