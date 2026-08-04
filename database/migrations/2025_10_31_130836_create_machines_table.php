@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use PhpParser\Node\Stmt\TraitUseAdaptation\Alias;
 
 return new class extends Migration
 {
@@ -34,17 +33,16 @@ return new class extends Migration
             $table->string('identificador');
 
             // Definir un campo tipo que indica si es parent (1) o roulette (2)
-            $table->enum('type', ['parent', 'roulette','single'])->nullable();
+            $table->enum('type', ['parent', 'roulette', 'single'])->nullable();
 
             // Campo para asociar hijos a una máquina (ya sea tipo parent o roulette)
             $table->foreignId('parent_id')->nullable()->constrained('machines')->cascadeOnDelete();
 
             // placa de ComData, numero repetitivo que se diferencia por el machine_id, cada placa va asociada a una maquina
-            //$table->intenger('Number_comData');
+            // $table->intenger('Number_comData');
 
             $table->timestamps();
         });
-
 
     }
 

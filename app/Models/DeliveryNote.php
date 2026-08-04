@@ -20,22 +20,27 @@ class DeliveryNote extends Model
     {
         return $this->belongsTo(SparePart::class, 'spare_part_id');
     }
+
     public function state()
     {
         return $this->belongsTo(State::class);
     }
+
     public function local()
     {
         return $this->belongsTo(Local::class);
     }
+
     public function bar()
     {
         return $this->belongsTo(Bar::class);
     }
+
     public function machine()
     {
         return $this->belongsTo(Machine::class);
     }
+
     public function user()
     {
         return $this->belongsTo(User::class);

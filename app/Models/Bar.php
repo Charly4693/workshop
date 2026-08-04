@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Machine;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Bar extends Model
 {
@@ -12,10 +12,19 @@ class Bar extends Model
 
     protected $fillable = [
         'name',
+        'holder',
+        'dni_cif',
+        'address',
+        'town',
     ];
 
-    public function machines()
+    public function machines(): HasMany
     {
         return $this->hasMany(Machine::class);
+    }
+
+    public function deliveryNotes(): HasMany
+    {
+        return $this->hasMany(DeliveryNote::class);
     }
 }
