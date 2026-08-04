@@ -160,17 +160,17 @@ Resultado: 7 pruebas y 23 aserciones superadas. Las cuatro pantallas comprobadas
 
 ### Tareas
 
-- [ ] Instalar `filament/filament` 5.x mediante Composer.
-- [ ] Ejecutar la instalación del Panel Builder.
-- [ ] No utilizar `filament:install --scaffold`, para evitar sobrescribir archivos existentes.
-- [ ] Confirmar el registro de `AdminPanelProvider` en `bootstrap/providers.php`.
-- [ ] Configurar el panel con identificador `admin` y ruta `/admin`.
-- [ ] Configurar nombre, logotipo, colores y zona horaria.
-- [ ] Configurar idioma español.
-- [ ] Mantener desactivado el registro público desde el panel.
-- [ ] Mantener las rutas Blade actuales sin cambios.
-- [ ] Instalar las dependencias frontend necesarias.
-- [ ] Compilar los recursos y comprobar que Bootstrap no interfiere con Filament.
+- [x] Instalar `filament/filament` 5.x mediante Composer.
+- [x] Ejecutar la instalación del Panel Builder.
+- [x] No utilizar `filament:install --scaffold`, para evitar sobrescribir archivos existentes.
+- [x] Confirmar el registro de `AdminPanelProvider` en `bootstrap/providers.php`.
+- [x] Configurar el panel con identificador `admin` y ruta `/admin`.
+- [x] Configurar nombre, logotipo, colores y zona horaria.
+- [x] Configurar idioma español.
+- [x] Mantener desactivado el registro público desde el panel.
+- [x] Mantener las rutas Blade actuales sin cambios.
+- [x] Instalar las dependencias frontend necesarias.
+- [x] Compilar los recursos y comprobar que Bootstrap no interfiere con Filament.
 
 ### Criterios de aceptación
 
@@ -179,6 +179,8 @@ Resultado: 7 pruebas y 23 aserciones superadas. Las cuatro pantallas comprobadas
 - No se han alterado tablas ni datos de negocio.
 - Los recursos frontend compilan sin errores.
 - No existen colisiones visuales entre Bootstrap y Tailwind.
+
+**Resultado:** Fase 1 completada con Filament 5.7.5. `/admin` redirige al acceso de Filament en español, el registro público del panel no existe y `/login` sigue disponible. El panel carga sus recursos propios sin incluir el Bootstrap de las vistas Blade. Composer, 10 pruebas con 34 aserciones y la compilación de producción de Vite finalizan correctamente.
 
 ## 8. Fase 2: autenticación y autorización
 
