@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class FactoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Factory::class, 'factory');
+    }
+
     public function index()
     {
         $factories = Factory::orderBy('name')->paginate(10);

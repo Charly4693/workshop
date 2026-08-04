@@ -14,6 +14,11 @@ use Illuminate\Http\Request;
 
 class DeliveryNoteController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(DeliveryNote::class, 'deliverynote');
+    }
+
     public function index()
     {
         // Eager loading para evitar N+1

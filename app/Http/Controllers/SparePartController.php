@@ -10,6 +10,11 @@ use Illuminate\Http\Request;
 
 class SparePartController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(SparePart::class, 'sparepart');
+    }
+
     public function index()
     {
         // Traemos fábrica y estado para no hacer N+1

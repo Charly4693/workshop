@@ -186,32 +186,36 @@ Resultado: 7 pruebas y 23 aserciones superadas. Las cuatro pantallas comprobadas
 
 ### Modelo de acceso
 
-Antes de desplegar el panel debe decidirse qué usuarios son administradores. La opción recomendada es añadir un campo o sistema explícito de roles, evitando autorizar únicamente por dirección de correo.
+La aplicación tendrá una sola cuenta, que actuará como administrador. Los pedidos de los técnicos se reciben por correo electrónico, por lo que no se crearán cuentas, roles ni permisos diferenciados para ellos.
 
-Opciones posibles:
+Decisiones:
 
-- Campo booleano `is_admin` para un único nivel administrativo.
-- Campo `role` con varios perfiles.
-- Paquete de roles y permisos si se necesita autorización granular.
+- No se añade `is_admin`, una columna de rol ni un paquete de permisos.
+- Cualquier usuario autenticado puede acceder al panel `admin`; la aplicación mantendrá una única cuenta.
+- No se expondrá gestión de usuarios ni registro público.
+- Las Policies siguen siendo obligatorias para que todos los recursos tengan autorización explícita.
 
 ### Tareas
 
-- [ ] Definir los perfiles funcionales: administrador, taller, técnico y consulta.
-- [ ] Implementar `FilamentUser` en el modelo `User`.
-- [ ] Implementar `canAccessPanel()`.
-- [ ] Impedir el acceso de usuarios no autorizados.
-- [ ] Crear Policies para todos los modelos administrados.
-- [ ] Activar `strictAuthorization()` en el panel.
-- [ ] Decidir si se conserva temporalmente el login de Laravel UI.
-- [ ] Deshabilitar el registro público duplicado en `routes/web.php`.
-- [ ] Probar accesos autorizados y denegados.
+- [x] Documentar el modelo de acceso de una sola cuenta administrativa.
+- [x] Implementar `FilamentUser` en el modelo `User`.
+- [x] Implementar `canAccessPanel()` para el panel `admin`.
+- [x] Crear Policies completas para todos los modelos administrados.
+- [x] Activar `strictAuthorization()` en el panel.
+- [x] Conservar temporalmente el login de Laravel UI.
+- [x] Proteger los CRUD Blade mediante autenticación y Policies.
+- [x] Deshabilitar el registro público duplicado en `routes/web.php`.
+- [x] Probar accesos autenticados, redirecciones de invitados y Policies.
 
 ### Criterios de aceptación
 
-- Un administrador puede iniciar sesión en `/admin`.
-- Un usuario sin permisos recibe una denegación de acceso.
+- El usuario autenticado puede iniciar sesión en `/admin`.
+- Un invitado es redirigido al login desde el panel y los CRUD Blade.
+- Las rutas públicas de registro no existen.
 - Ningún recurso queda accesible por ausencia accidental de una Policy.
 - Las operaciones de crear, ver, editar y eliminar respetan los permisos definidos.
+
+**Resultado:** Fase 2 completada sin roles, `is_admin` ni cambios de esquema. La cuenta autenticada accede a `/admin`, todos los modelos previstos tienen una Policy completa, los CRUD Blade exigen autenticación y autorización, y `/register` no existe. Composer y 15 pruebas con 143 aserciones finalizan correctamente.
 
 ## 9. Fase 3: recursos piloto
 

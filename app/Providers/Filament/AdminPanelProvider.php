@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->strictAuthorization()
             ->brandName(config('app.name'))
             ->brandLogo(asset('img/sin fondo - copia_favicon.png'))
             ->brandLogoHeight('3rem')

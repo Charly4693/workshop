@@ -26,10 +26,10 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-Auth::routes();
+Route::middleware('auth')->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-Route::resource('/factories', FactoryController::class);
-Route::resource('/deliverynotes', DeliveryNoteController::class);
-Route::resource('/spareparts', SparePartController::class);
+    Route::resource('/factories', FactoryController::class);
+    Route::resource('/deliverynotes', DeliveryNoteController::class);
+    Route::resource('/spareparts', SparePartController::class);
+});
