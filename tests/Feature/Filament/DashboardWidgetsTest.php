@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Filament;
 
+use App\Filament\Widgets\DeliveryNotesByState;
 use App\Filament\Widgets\LatestDeliveryNotes;
 use App\Filament\Widgets\RecentStateChanges;
-use App\Filament\Widgets\StateCatalogLists;
 use App\Models\DeliveryNote;
 use App\Models\Factory;
 use App\Models\SparePart;
@@ -36,17 +36,17 @@ class DashboardWidgetsTest extends TestCase
         $widgets = Filament::getPanel('admin')->getWidgets();
 
         $this->assertContains(LatestDeliveryNotes::class, $widgets);
-        $this->assertContains(StateCatalogLists::class, $widgets);
+        $this->assertContains(DeliveryNotesByState::class, $widgets);
         $this->assertContains(RecentStateChanges::class, $widgets);
 
         $this->get('/admin')->assertOk();
 
         Livewire::test(LatestDeliveryNotes::class)->assertSee('Últimos 10 albaranes');
-        Livewire::test(StateCatalogLists::class)->assertSee('Albaranes y repuestos por estado');
+        Livewire::test(DeliveryNotesByState::class)->assertSee('Albaranes por estado');
         Livewire::test(RecentStateChanges::class)->assertSee('Actividad reciente');
     }
 
-    public function test_state_tabs_filter_both_paginated_lists_independently(): void
+    public function test_state_tabs_filter_the_paginated_delivery_note_list(): void
     {
         $workshop = State::create(['name' => 'Taller']);
         $repairing = State::create(['name' => 'Reparación']);
@@ -80,7 +80,7 @@ class DashboardWidgetsTest extends TestCase
             ]);
         }
 
-        $component = Livewire::test(StateCatalogLists::class)
+        $component = Livewire::test(DeliveryNotesByState::class)
             ->assertSet('activeStateId', $repairing->id)
             ->assertSee('Pieza-R-001')
             ->assertDontSee('Pieza-T-001')
@@ -90,19 +90,17 @@ class DashboardWidgetsTest extends TestCase
             ->assertDontSee('Pieza-T-001');
 
         $this->assertSame(11, $component->instance()->deliveryNotes()->total());
-        $this->assertSame(11, $component->instance()->spareParts()->total());
+        $this->assertSame(3, $component->instance()->deliveryNotes()->lastPage());
 
         $component
             ->call('nextPage', 'deliveryNotesPage')
             ->assertSet('paginators.deliveryNotesPage', 2)
-            ->assertSet('paginators.sparePartsPage', 1)
+            ->assertDontSee('Pieza-T-001')
+            ->call('nextPage', 'deliveryNotesPage')
+            ->assertSet('paginators.deliveryNotesPage', 3)
             ->assertSee('Pieza-T-001')
-            ->call('nextPage', 'sparePartsPage')
-            ->assertSet('paginators.deliveryNotesPage', 2)
-            ->assertSet('paginators.sparePartsPage', 2)
             ->call('selectState', $repairing->id)
             ->assertSet('paginators.deliveryNotesPage', 1)
-            ->assertSet('paginators.sparePartsPage', 1)
             ->assertSee('Pieza-R-001')
             ->assertDontSee('Pieza-T-001');
     }

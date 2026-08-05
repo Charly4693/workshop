@@ -3,7 +3,6 @@
 namespace App\Filament\Widgets;
 
 use App\Models\DeliveryNote;
-use App\Models\SparePart;
 use App\Models\State;
 use Filament\Widgets\Widget;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -12,7 +11,7 @@ use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\WithPagination;
 
-class StateCatalogLists extends Widget
+class DeliveryNotesByState extends Widget
 {
     use WithPagination;
 
@@ -20,7 +19,7 @@ class StateCatalogLists extends Widget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected string $view = 'filament.widgets.state-catalog-lists';
+    protected string $view = 'filament.widgets.delivery-notes-by-state';
 
     public ?int $activeStateId = null;
 
@@ -37,15 +36,14 @@ class StateCatalogLists extends Widget
 
         $this->activeStateId = $stateId;
         $this->resetPage('deliveryNotesPage');
-        $this->resetPage('sparePartsPage');
-        unset($this->deliveryNotes, $this->spareParts);
+        unset($this->deliveryNotes);
     }
 
     #[Computed]
     public function states(): Collection
     {
         return State::query()
-            ->withCount(['deliveryNotes', 'spareParts'])
+            ->withCount('deliveryNotes')
             ->orderBy('name')
             ->get();
     }
@@ -68,21 +66,6 @@ class StateCatalogLists extends Widget
             )
             ->latest('created_at')
             ->latest('id')
-            ->paginate(10, pageName: 'deliveryNotesPage');
-    }
-
-    #[Computed]
-    public function spareParts(): LengthAwarePaginator
-    {
-        return SparePart::query()
-            ->with('factory:id,name')
-            ->when(
-                $this->activeStateId !== null,
-                fn (Builder $query): Builder => $query->where('state_id', $this->activeStateId),
-                fn (Builder $query): Builder => $query->whereRaw('1 = 0'),
-            )
-            ->latest('updated_at')
-            ->latest('id')
-            ->paginate(10, pageName: 'sparePartsPage');
+            ->paginate(5, pageName: 'deliveryNotesPage');
     }
 }

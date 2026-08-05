@@ -379,22 +379,23 @@ La gestión de usuarios se descarta por decisión funcional. Workshop tendrá un
 ### Widgets acordados
 
 - [x] Mostrar los últimos 10 albaranes.
-- [x] Mostrar albaranes y repuestos en un listado conjunto con una pestaña por estado.
-- [x] Paginar de forma independiente los albaranes y los repuestos de cada estado.
+- [x] Mostrar los albaranes en un listado con una pestaña por estado.
+- [x] Paginar los albaranes de cada estado de cinco en cinco.
 - [x] Mostrar la actividad reciente a partir del historial de estados.
 
 ### Criterios de aceptación
 
 - Los listados recientes se limitan a los 10 registros más nuevos.
 - Cada estado disponible tiene su propia pestaña.
-- Cada pestaña muestra dos tablas: una de albaranes y otra de repuestos.
-- Las dos tablas tienen paginación independiente de 10 registros por página.
-- Cambiar de estado reinicia ambas paginaciones.
-- Las filas permiten acceder al albarán o repuesto correspondiente.
+- Cada pestaña muestra la tabla de albaranes del estado seleccionado.
+- La tabla tiene una paginación de 5 registros por página.
+- El bloque mantiene una altura fija para evitar saltos visuales entre estados.
+- Cambiar de estado reinicia la paginación.
+- Las filas permiten acceder al albarán y consultar desde él su repuesto.
 - Las consultas cargan anticipadamente las relaciones mostradas.
 - Los widgets se adaptan a escritorio y móvil y muestran sus textos en español.
 
-**Resultado:** Fase 8 completada. El dashboard de `/admin` muestra los últimos 10 albaranes, un bloque con pestañas por estado que contiene dos tablas paginadas e independientes de albaranes y repuestos, y los 10 cambios de estado más recientes. Los listados enlazan con los recursos correspondientes, usan carga anticipada de relaciones y no permiten modificar datos directamente. Los widgets informativos predeterminados de Filament se han retirado para centrar el dashboard en la actividad del taller. Pint, Composer, 43 pruebas con 493 aserciones y la compilación de producción de Vite finalizan correctamente.
+**Resultado:** Fase 8 completada. El dashboard de `/admin` muestra los últimos 10 albaranes, un bloque de altura fija con pestañas por estado y paginación de 5 registros, y los 10 cambios de estado más recientes. El listado independiente de repuestos por estado se ha retirado porque cada albarán ya permite consultar su repuesto. Los listados enlazan con los recursos correspondientes, usan carga anticipada de relaciones y no permiten modificar datos directamente. Los widgets informativos predeterminados de Filament se han retirado para centrar el dashboard en la actividad del taller. Pint, Composer, 43 pruebas con 491 aserciones y la compilación de producción de Vite finalizan correctamente.
 
 ## 15. Estrategia de pruebas
 
