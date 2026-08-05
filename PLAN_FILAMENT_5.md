@@ -382,6 +382,7 @@ La gestión de usuarios se descarta por decisión funcional. Workshop tendrá un
 - [x] Mostrar los albaranes en un listado con una pestaña por estado.
 - [x] Paginar los albaranes de cada estado de cinco en cinco.
 - [x] Mostrar la actividad reciente a partir del historial de estados.
+- [x] Aplicar el azul corporativo `#3A53CD` del logotipo a los elementos principales del panel.
 
 ### Criterios de aceptación
 
@@ -394,8 +395,9 @@ La gestión de usuarios se descarta por decisión funcional. Workshop tendrá un
 - Las filas permiten acceder al albarán y consultar desde él su repuesto.
 - Las consultas cargan anticipadamente las relaciones mostradas.
 - Los widgets se adaptan a escritorio y móvil y muestran sus textos en español.
+- Los botones, pestañas activas, enlaces y detalles principales utilizan el azul del logotipo.
 
-**Resultado:** Fase 8 completada. El dashboard de `/admin` muestra los últimos 10 albaranes, un bloque de altura fija con pestañas por estado y paginación de 5 registros, y los 10 cambios de estado más recientes. El listado independiente de repuestos por estado se ha retirado porque cada albarán ya permite consultar su repuesto. Los listados enlazan con los recursos correspondientes, usan carga anticipada de relaciones y no permiten modificar datos directamente. Los widgets informativos predeterminados de Filament se han retirado para centrar el dashboard en la actividad del taller. Pint, Composer, 43 pruebas con 491 aserciones y la compilación de producción de Vite finalizan correctamente.
+**Resultado:** Fase 8 completada. El dashboard de `/admin` muestra los últimos 10 albaranes, un bloque de altura fija con pestañas por estado y paginación de 5 registros, y los 10 cambios de estado más recientes. El listado independiente de repuestos por estado se ha retirado porque cada albarán ya permite consultar su repuesto. Los listados enlazan con los recursos correspondientes, usan carga anticipada de relaciones y no permiten modificar datos directamente. El panel utiliza el azul corporativo `#3A53CD` extraído del logotipo. Los widgets informativos predeterminados de Filament se han retirado para centrar el dashboard en la actividad del taller. Pint, Composer, 44 pruebas con 492 aserciones y la compilación de producción de Vite finalizan correctamente.
 
 ## 15. Estrategia de pruebas
 

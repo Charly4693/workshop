@@ -32,7 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight('3rem')
             ->favicon(asset('img/sin fondo - copia_favicon.png'))
             ->colors([
-                'primary' => Color::Indigo,
+                'primary' => Color::hex('#3A53CD'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')

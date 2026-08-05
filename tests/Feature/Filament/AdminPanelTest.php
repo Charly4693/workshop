@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Filament;
 
+use Filament\Facades\Filament;
+use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
@@ -28,6 +30,14 @@ class AdminPanelTest extends TestCase
     public function test_the_admin_panel_does_not_expose_public_registration(): void
     {
         $this->assertFalse(Route::has('filament.admin.auth.register'));
+    }
+
+    public function test_the_admin_panel_uses_the_logo_blue_as_its_primary_color(): void
+    {
+        $this->assertSame(
+            Color::hex('#3A53CD'),
+            Filament::getPanel('admin')->getColors()['primary'],
+        );
     }
 
     public function test_the_legacy_login_remains_available(): void

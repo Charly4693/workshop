@@ -34,13 +34,13 @@
         }
 
         .fi-state-delivery-link {
-            color: rgb(79 70 229);
+            color: #3a53cd;
             font-weight: 500;
             text-decoration: none;
         }
 
         .dark .fi-state-delivery-link {
-            color: rgb(165 180 252);
+            color: #b4c0fd;
         }
 
         .fi-state-delivery-link:hover {
