@@ -7,6 +7,7 @@ use App\Models\DeliveryNote;
 use App\Models\Factory;
 use App\Models\Local;
 use App\Models\Machine;
+use App\Models\PrometeoSyncRun;
 use App\Models\SparePart;
 use App\Models\SparePartStateHistory;
 use App\Models\State;
@@ -68,6 +69,7 @@ class AccessControlTest extends TestCase
             Factory::class,
             Local::class,
             Machine::class,
+            PrometeoSyncRun::class,
             SparePart::class,
             SparePartStateHistory::class,
             State::class,
@@ -78,23 +80,31 @@ class AccessControlTest extends TestCase
             $record = new $modelClass;
             $gate = Gate::forUser($user);
 
+            $readOnlyModels = [
+                Bar::class,
+                Local::class,
+                Machine::class,
+                PrometeoSyncRun::class,
+                SparePartStateHistory::class,
+            ];
+
             $this->assertInstanceOf(AuthenticatedUserPolicy::class, $policy);
 
             foreach (['viewAny', 'create', 'forceDeleteAny', 'restoreAny', 'reorder'] as $ability) {
                 $this->assertSame(
-                    $ability === 'viewAny' || $modelClass !== SparePartStateHistory::class,
+                    $ability === 'viewAny' || ! in_array($modelClass, $readOnlyModels, true),
                     $gate->allows($ability, $modelClass),
                 );
             }
 
             $this->assertSame(
-                ! in_array($modelClass, [Factory::class, SparePartStateHistory::class, State::class], true),
+                ! in_array($modelClass, [Factory::class, State::class, ...$readOnlyModels], true),
                 $gate->allows('deleteAny', $modelClass),
             );
 
             foreach (['view', 'update', 'delete', 'forceDelete', 'restore', 'replicate'] as $ability) {
                 $this->assertSame(
-                    $ability === 'view' || $modelClass !== SparePartStateHistory::class,
+                    $ability === 'view' || ! in_array($modelClass, $readOnlyModels, true),
                     $gate->allows($ability, $record),
                 );
             }

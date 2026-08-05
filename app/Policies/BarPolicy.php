@@ -2,4 +2,4 @@
 
 namespace App\Policies;
 
-class BarPolicy extends AuthenticatedUserPolicy {}
+class BarPolicy extends ReadOnlyPolicy {}

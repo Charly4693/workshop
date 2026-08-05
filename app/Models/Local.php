@@ -11,10 +11,14 @@ class Local extends Model
         'name',
         'dbconection',
         'idMachines',
+        'is_active',
+        'synced_at',
     ];
 
     protected $casts = [
         'dbconection' => 'array',
+        'is_active' => 'boolean',
+        'synced_at' => 'datetime',
     ];
 
     protected $hidden = [

@@ -26,7 +26,6 @@ La primera versión del panel deberá cubrir:
 
 Quedan fuera de la primera versión:
 
-- La sincronización efectiva con sistemas externos de Prometeo.
 - Una API pública.
 - Multi-tenancy.
 - Aplicación móvil.
@@ -312,37 +311,55 @@ Este será el recurso principal del panel y requerirá mayor diseño funcional.
 
 **Resultado:** Fase 5 completada. `DeliveryNoteResource` permite gestionar albaranes con selección reactiva de local o bar y máquinas filtradas por ubicación; `user_id` identifica al técnico receptor. La tabla incorpora búsqueda, filtros completos, estados visuales, orden cronológico y una acción rápida para cambiar el estado. Los estados de albaranes y repuestos comparten el catálogo `states`; el administrador puede realizar cualquier transición configurada y repetir el mismo estado no genera historial. `DeliveryNoteWorkflow` guarda el albarán, sincroniza el estado actual de la pieza y registra la transición dentro de una transacción. El historial es inmutable, conserva el usuario que efectuó el cambio y se consulta desde cada repuesto. La migración se aplicó en MySQL y creó el estado inicial de las piezas existentes. El CRUD Blade de `/deliverynotes` continúa disponible durante la transición. Pint, Composer, 34 pruebas con 379 aserciones y la compilación de producción de Vite finalizan correctamente.
 
-## 12. Fase 6: locales, bares y máquinas
+## 12. Fase 6: sincronización manual con Prometeo
 
-### LocalResource
+Prometeo es la fuente de verdad para locales, bares y máquinas. Workshop mantiene una copia local con los mismos identificadores para conservar sus claves foráneas y permitir que los albaranes funcionen aunque Prometeo no esté disponible temporalmente. Estos datos no tendrán CRUD en Filament.
 
-- [ ] Gestionar nombre e identificadores operativos.
-- [ ] Proteger la información de conexión.
-- [ ] Mostrar máquinas relacionadas mediante Relation Manager.
-- [ ] Evitar que las credenciales aparezcan en listados, logs o exportaciones.
+### Preparación y conexión
 
-### BarResource
+- [x] Crear el usuario MySQL `workshop_sync` con acceso `SELECT` limitado a `prometeo`.
+- [x] Configurar una segunda conexión Laravel llamada `prometeo`.
+- [x] Comprobar la conexión efectiva como `workshop_sync@localhost`.
+- [x] Inspeccionar las tablas y relaciones de `prometeo.locals`, `prometeo.bars` y `prometeo.machines`.
+- [x] Confirmar que las claves primarias existentes coinciden entre Prometeo y Workshop.
 
-- [ ] Gestionar nombre, titular, documento fiscal, dirección y población.
-- [ ] Mostrar máquinas relacionadas.
-- [ ] Buscar por nombre, titular, población y documento fiscal.
-- [ ] Proteger los datos personales según los perfiles de usuario.
+### Adaptación del esquema local
 
-### MachineResource
+- [x] Añadir el tipo de máquina `AADD`, presente en Prometeo.
+- [x] Añadir un indicador de actividad para conservar como inactivos los registros eliminados en Prometeo.
+- [x] Mantener `dbconection` oculto y fuera de listados, logs y resultados de sincronización.
+- [x] Revisar los registros locales existentes antes de sobrescribir sus datos con Prometeo.
 
-- [ ] Gestionar nombre, alias, identificador y tipo.
-- [ ] Permitir asociación con local o bar.
-- [ ] Gestionar la relación padre-hijo.
-- [ ] Filtrar por ubicación, tipo y máquina padre.
-- [ ] Impedir ciclos en la jerarquía.
-- [ ] Mostrar hijos y ubicación mediante Relation Managers o páginas relacionadas.
+### Servicio de sincronización
+
+- [x] Sincronizar locales mediante `upsert` usando el `id` de Prometeo.
+- [x] Sincronizar bares mediante `upsert` usando el `id` de Prometeo.
+- [x] Sincronizar máquinas en dos pasos: datos y ubicación primero, relación padre-hijo después.
+- [x] Marcar como inactivos los registros que ya no existan en Prometeo, sin eliminarlos.
+- [x] Impedir ejecuciones simultáneas mediante un bloqueo.
+- [x] Ejecutar las escrituras locales dentro de una transacción.
+- [x] Registrar fecha, duración, resultado y contadores de cada sincronización.
+
+### Ejecución manual
+
+- [x] Crear el comando `php artisan prometeo:sync`.
+- [x] Crear una página de Filament con el estado de la última sincronización.
+- [x] Añadir el botón protegido «Sincronizar con Prometeo» con confirmación.
+- [x] Mostrar una notificación con los registros creados, actualizados, inactivados y los errores.
+- [x] Mantener locales, bares y máquinas como datos de consulta sin acciones CRUD.
+- [x] Mostrar en las fichas de locales y bares un listado de sus máquinas relacionadas.
+- [x] Mostrar únicamente registros activos en los selectores de albaranes.
 
 ### Criterios de aceptación
 
-- Los tres recursos gestionan correctamente sus relaciones.
-- Una máquina no queda asociada simultáneamente de forma incoherente.
-- No se exponen credenciales de conexión.
-- La jerarquía de máquinas no permite ciclos.
+- El botón actualiza los tres catálogos manteniendo los identificadores de Prometeo.
+- Los albaranes conservan sus relaciones históricas aunque un registro desaparezca de Prometeo.
+- La jerarquía y la ubicación de las máquinas se sincronizan sin referencias incompletas.
+- Un fallo no deja una sincronización aplicada parcialmente.
+- Workshop nunca escribe en la base de datos de Prometeo.
+- No se exponen credenciales ni valores de `dbconection`.
+
+**Resultado:** Fase 6 completada. Workshop se conecta a Prometeo con el usuario de solo lectura `workshop_sync@localhost` y sincroniza los tres catálogos manualmente desde `/admin/prometeo-sync` o mediante `php artisan prometeo:sync`. La primera ejecución dejó 17 locales, 41 bares y 2.839 máquinas activas: creó 2.229 máquinas y actualizó 17 locales y 570 máquinas existentes. Una segunda ejecución no detectó cambios, lo que confirma que el proceso es idempotente. Los listados `/admin/locals`, `/admin/bars` y `/admin/machines` son exclusivamente de consulta; las fichas de locales y bares muestran sus máquinas relacionadas, `dbconection` no se renderiza y los albaranes solo ofrecen ubicaciones y máquinas activas. La migración se aplicó en MySQL; Pint, Composer, 40 pruebas con 445 aserciones y la compilación de producción de Vite finalizan correctamente.
 
 ## 13. Fase 7: usuarios
 

@@ -2,4 +2,4 @@
 
 namespace App\Policies;
 
-class LocalPolicy extends AuthenticatedUserPolicy {}
+class LocalPolicy extends ReadOnlyPolicy {}

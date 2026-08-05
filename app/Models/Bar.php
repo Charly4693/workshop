@@ -16,7 +16,17 @@ class Bar extends Model
         'dni_cif',
         'address',
         'town',
+        'is_active',
+        'synced_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+            'synced_at' => 'datetime',
+        ];
+    }
 
     public function machines(): HasMany
     {

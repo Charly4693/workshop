@@ -2,4 +2,4 @@
 
 namespace App\Policies;
 
-class MachinePolicy extends AuthenticatedUserPolicy {}
+class MachinePolicy extends ReadOnlyPolicy {}

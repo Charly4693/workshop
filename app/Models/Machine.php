@@ -18,7 +18,17 @@ class Machine extends Model
         'identificador',
         'type',
         'parent_id',
+        'is_active',
+        'synced_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+            'synced_at' => 'datetime',
+        ];
+    }
 
     protected static function booted(): void
     {

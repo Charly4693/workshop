@@ -10,6 +10,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class DeliveryNoteForm
 {
@@ -49,7 +50,11 @@ class DeliveryNoteForm
                     ->schema([
                         Select::make('local_id')
                             ->label('Local')
-                            ->relationship('local', 'name')
+                            ->relationship(
+                                'local',
+                                'name',
+                                modifyQueryUsing: fn (Builder $query): Builder => $query->where('is_active', true),
+                            )
                             ->searchable()
                             ->preload()
                             ->live()
@@ -65,7 +70,11 @@ class DeliveryNoteForm
                             ->rules(['exists:locals,id']),
                         Select::make('bar_id')
                             ->label('Bar')
-                            ->relationship('bar', 'name')
+                            ->relationship(
+                                'bar',
+                                'name',
+                                modifyQueryUsing: fn (Builder $query): Builder => $query->where('is_active', true),
+                            )
                             ->searchable()
                             ->preload()
                             ->live()
@@ -117,6 +126,7 @@ class DeliveryNoteForm
         }
 
         return Machine::query()
+            ->where('is_active', true)
             ->when(
                 filled($localId),
                 fn ($query) => $query->where('local_id', $localId)->whereNull('bar_id'),

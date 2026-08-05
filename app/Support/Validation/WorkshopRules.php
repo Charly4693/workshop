@@ -89,7 +89,7 @@ final class WorkshopRules
             'name' => ['required', 'string', 'max:255'],
             'alias' => ['required', 'string', 'max:255'],
             'identificador' => ['required', 'string', 'max:255'],
-            'type' => ['nullable', Rule::in(['parent', 'roulette', 'single'])],
+            'type' => ['nullable', Rule::in(['parent', 'roulette', 'single', 'AADD'])],
             'local_id' => ['nullable', 'required_without:bar_id', 'prohibits:bar_id', 'exists:locals,id'],
             'bar_id' => ['nullable', 'required_without:local_id', 'prohibits:local_id', 'exists:bars,id'],
             'parent_id' => [

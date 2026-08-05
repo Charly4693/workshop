@@ -59,6 +59,25 @@ return [
             ]) : [],
         ],
 
+        'prometeo' => [
+            'driver' => 'mysql',
+            'host' => env('PROMETEO_DB_HOST', '127.0.0.1'),
+            'port' => env('PROMETEO_DB_PORT', '3306'),
+            'database' => env('PROMETEO_DB_DATABASE', 'prometeo'),
+            'username' => env('PROMETEO_DB_USERNAME'),
+            'password' => env('PROMETEO_DB_PASSWORD', ''),
+            'unix_socket' => env('PROMETEO_DB_SOCKET', ''),
+            'charset' => env('PROMETEO_DB_CHARSET', 'utf8mb4'),
+            'collation' => env('PROMETEO_DB_COLLATION', 'utf8mb4_general_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('PROMETEO_MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),
