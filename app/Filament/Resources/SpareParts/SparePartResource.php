@@ -5,6 +5,7 @@ namespace App\Filament\Resources\SpareParts;
 use App\Filament\Resources\SpareParts\Pages\CreateSparePart;
 use App\Filament\Resources\SpareParts\Pages\EditSparePart;
 use App\Filament\Resources\SpareParts\Pages\ListSpareParts;
+use App\Filament\Resources\SpareParts\RelationManagers\StateHistoriesRelationManager;
 use App\Filament\Resources\SpareParts\Schemas\SparePartForm;
 use App\Filament\Resources\SpareParts\Tables\SparePartsTable;
 use App\Models\SparePart;
@@ -41,6 +42,13 @@ class SparePartResource extends Resource
     public static function table(Table $table): Table
     {
         return SparePartsTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            StateHistoriesRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

@@ -21,8 +21,21 @@ class State extends Model
         return $this->hasMany(DeliveryNote::class);
     }
 
+    public function previousSparePartStateHistories(): HasMany
+    {
+        return $this->hasMany(SparePartStateHistory::class, 'previous_state_id');
+    }
+
+    public function newSparePartStateHistories(): HasMany
+    {
+        return $this->hasMany(SparePartStateHistory::class, 'new_state_id');
+    }
+
     public function isInUse(): bool
     {
-        return $this->spareParts()->exists() || $this->deliveryNotes()->exists();
+        return $this->spareParts()->exists()
+            || $this->deliveryNotes()->exists()
+            || $this->previousSparePartStateHistories()->exists()
+            || $this->newSparePartStateHistories()->exists();
     }
 }

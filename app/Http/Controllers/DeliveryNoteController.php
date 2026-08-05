@@ -9,6 +9,7 @@ use App\Models\Machine;
 use App\Models\SparePart;
 use App\Models\State;
 use App\Models\User;
+use App\Services\DeliveryNoteWorkflow;
 use App\Support\Validation\WorkshopRules;
 use Illuminate\Http\Request;
 
@@ -54,11 +55,14 @@ class DeliveryNoteController extends Controller
         ));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, DeliveryNoteWorkflow $workflow)
     {
-        $data = $request->validate(WorkshopRules::deliveryNote());
+        $data = $request->validate(WorkshopRules::deliveryNote(
+            $request->input('local_id'),
+            $request->input('bar_id'),
+        ));
 
-        DeliveryNote::create($data);
+        $workflow->create($data);
 
         return redirect()
             ->route('deliverynotes.index')
@@ -85,11 +89,17 @@ class DeliveryNoteController extends Controller
         ));
     }
 
-    public function update(Request $request, DeliveryNote $deliverynote)
-    {
-        $data = $request->validate(WorkshopRules::deliveryNote());
+    public function update(
+        Request $request,
+        DeliveryNote $deliverynote,
+        DeliveryNoteWorkflow $workflow,
+    ) {
+        $data = $request->validate(WorkshopRules::deliveryNote(
+            $request->input('local_id'),
+            $request->input('bar_id'),
+        ));
 
-        $deliverynote->update($data);
+        $workflow->update($deliverynote, $data);
 
         return redirect()
             ->route('deliverynotes.index')

@@ -5,6 +5,7 @@ namespace App\Support\Validation;
 use App\Models\Factory;
 use App\Models\Machine;
 use App\Models\State;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Validation\Rule;
 
 final class WorkshopRules
@@ -52,15 +53,32 @@ final class WorkshopRules
         ];
     }
 
-    public static function deliveryNote(): array
+    public static function deliveryNote(int|string|null $localId = null, int|string|null $barId = null): array
     {
+        $machineExists = Rule::exists('machines', 'id')
+            ->where(function (Builder $query) use ($localId, $barId): void {
+                if (filled($localId) && blank($barId)) {
+                    $query->where('local_id', $localId)->whereNull('bar_id');
+
+                    return;
+                }
+
+                if (filled($barId) && blank($localId)) {
+                    $query->where('bar_id', $barId)->whereNull('local_id');
+
+                    return;
+                }
+
+                $query->whereRaw('1 = 0');
+            });
+
         return [
-            'spare_part_id' => ['nullable', 'exists:spare_parts,id'],
-            'state_id' => ['nullable', 'exists:states,id'],
-            'local_id' => ['nullable', 'exists:locals,id'],
-            'bar_id' => ['nullable', 'exists:bars,id'],
-            'machine_id' => ['nullable', 'exists:machines,id'],
-            'user_id' => ['nullable', 'exists:users,id'],
+            'spare_part_id' => ['required', 'exists:spare_parts,id'],
+            'state_id' => ['required', 'exists:states,id'],
+            'local_id' => ['nullable', 'required_without:bar_id', 'prohibits:bar_id', 'exists:locals,id'],
+            'bar_id' => ['nullable', 'required_without:local_id', 'prohibits:local_id', 'exists:bars,id'],
+            'machine_id' => ['required', $machineExists],
+            'user_id' => ['required', 'exists:users,id'],
             'comment' => ['nullable', 'string', 'max:2000'],
         ];
     }

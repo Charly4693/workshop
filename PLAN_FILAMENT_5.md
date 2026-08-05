@@ -278,30 +278,30 @@ Este será el recurso principal del panel y requerirá mayor diseño funcional.
 
 ### Formulario
 
-- [ ] Selección de repuesto.
-- [ ] Selección de estado.
-- [ ] Selección de usuario responsable.
-- [ ] Selección de local o bar.
-- [ ] Selección de máquina filtrada por el local o bar elegido.
-- [ ] Campo de comentarios.
-- [ ] Campos reactivos para evitar combinaciones incoherentes.
-- [ ] Validación de que la máquina pertenece a la ubicación seleccionada.
+- [x] Selección de repuesto.
+- [x] Selección de estado.
+- [x] Selección del técnico receptor y responsable de la devolución.
+- [x] Selección de local o bar.
+- [x] Selección de máquina filtrada por el local o bar elegido.
+- [x] Campo de comentarios.
+- [x] Campos reactivos para evitar combinaciones incoherentes.
+- [x] Validación de que la máquina pertenece a la ubicación seleccionada.
 
 ### Tabla
 
-- [ ] Mostrar repuesto, estado, responsable, ubicación, máquina y fecha.
-- [ ] Búsqueda global por los campos relevantes.
-- [ ] Filtros por estado, usuario, local, bar, máquina y rango de fechas.
-- [ ] Indicadores visuales para los estados.
-- [ ] Orden predeterminado por registros más recientes.
-- [ ] Acciones para cambios frecuentes de estado.
+- [x] Mostrar repuesto, estado, responsable, ubicación, máquina y fecha.
+- [x] Búsqueda global por los campos relevantes.
+- [x] Filtros por estado, usuario, local, bar, máquina y rango de fechas.
+- [x] Indicadores visuales para los estados.
+- [x] Orden predeterminado por registros más recientes.
+- [x] Acciones para cambios frecuentes de estado.
 
 ### Flujo de estados
 
-- [ ] Definir las transiciones válidas entre estados.
-- [ ] Decidir si los estados de repuestos y albaranes deben compartir la misma tabla.
-- [ ] Registrar quién realiza cada cambio si se necesita trazabilidad.
-- [ ] Considerar una tabla de historial de estados.
+- [x] Definir las transiciones válidas entre estados.
+- [x] Decidir si los estados de repuestos y albaranes deben compartir la misma tabla.
+- [x] Registrar quién realiza cada cambio si se necesita trazabilidad.
+- [x] Considerar una tabla de historial de estados.
 
 ### Criterios de aceptación
 
@@ -309,6 +309,8 @@ Este será el recurso principal del panel y requerirá mayor diseño funcional.
 - Las combinaciones de local, bar y máquina son coherentes.
 - Los filtros responden con el volumen actual de datos.
 - Las acciones sensibles están autorizadas y, si procede, usan transacciones.
+
+**Resultado:** Fase 5 completada. `DeliveryNoteResource` permite gestionar albaranes con selección reactiva de local o bar y máquinas filtradas por ubicación; `user_id` identifica al técnico receptor. La tabla incorpora búsqueda, filtros completos, estados visuales, orden cronológico y una acción rápida para cambiar el estado. Los estados de albaranes y repuestos comparten el catálogo `states`; el administrador puede realizar cualquier transición configurada y repetir el mismo estado no genera historial. `DeliveryNoteWorkflow` guarda el albarán, sincroniza el estado actual de la pieza y registra la transición dentro de una transacción. El historial es inmutable, conserva el usuario que efectuó el cambio y se consulta desde cada repuesto. La migración se aplicó en MySQL y creó el estado inicial de las piezas existentes. El CRUD Blade de `/deliverynotes` continúa disponible durante la transición. Pint, Composer, 34 pruebas con 379 aserciones y la compilación de producción de Vite finalizan correctamente.
 
 ## 12. Fase 6: locales, bares y máquinas
 

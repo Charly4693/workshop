@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Observers\SparePartObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[ObservedBy([SparePartObserver::class])]
 class SparePart extends Model
 {
     protected $fillable = [
@@ -27,5 +30,10 @@ class SparePart extends Model
     public function deliveryNotes(): HasMany
     {
         return $this->hasMany(DeliveryNote::class, 'spare_part_id');
+    }
+
+    public function stateHistories(): HasMany
+    {
+        return $this->hasMany(SparePartStateHistory::class);
     }
 }

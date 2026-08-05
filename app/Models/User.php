@@ -52,6 +52,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(DeliveryNote::class, 'user_id');
     }
 
+    public function sparePartStateChanges()
+    {
+        return $this->hasMany(SparePartStateHistory::class, 'changed_by_user_id');
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return $panel->getId() === 'admin';

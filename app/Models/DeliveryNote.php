@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DeliveryNote extends Model
 {
@@ -16,32 +17,32 @@ class DeliveryNote extends Model
         'comment',
     ];
 
-    public function sparepart()
+    public function sparepart(): BelongsTo
     {
         return $this->belongsTo(SparePart::class, 'spare_part_id');
     }
 
-    public function state()
+    public function state(): BelongsTo
     {
         return $this->belongsTo(State::class);
     }
 
-    public function local()
+    public function local(): BelongsTo
     {
         return $this->belongsTo(Local::class);
     }
 
-    public function bar()
+    public function bar(): BelongsTo
     {
         return $this->belongsTo(Bar::class);
     }
 
-    public function machine()
+    public function machine(): BelongsTo
     {
         return $this->belongsTo(Machine::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
