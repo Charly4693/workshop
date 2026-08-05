@@ -257,6 +257,7 @@ Los primeros recursos serán los de menor complejidad. Servirán para establecer
 ### Tabla
 
 - [x] Mostrar nombre, fabricante, estado y fechas relevantes.
+- [x] Mostrar el último albarán asociado y el historial completo de albaranes del repuesto.
 - [x] Buscar por nombre y fabricante.
 - [x] Filtrar por fabricante y estado.
 - [x] Ordenar por nombre y fecha.

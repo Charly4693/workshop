@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\SpareParts\Tables;
 
+use App\Filament\Resources\DeliveryNotes\DeliveryNoteResource;
+use App\Models\SparePart;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -19,6 +21,7 @@ class SparePartsTable
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with([
                 'factory:id,name',
                 'state:id,name',
+                'latestDeliveryNote',
             ]))
             ->columns([
                 TextColumn::make('name')
@@ -34,6 +37,14 @@ class SparePartsTable
                     ->badge()
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('latestDeliveryNote.id')
+                    ->label('Último albarán')
+                    ->formatStateUsing(fn (int|string $state): string => "Albarán #{$state}")
+                    ->description(fn (SparePart $record): ?string => $record->latestDeliveryNote?->created_at?->format('d/m/Y H:i'))
+                    ->placeholder('Sin albarán')
+                    ->url(fn (SparePart $record): ?string => $record->latestDeliveryNote
+                        ? DeliveryNoteResource::getUrl('edit', ['record' => $record->latestDeliveryNote])
+                        : null),
                 TextColumn::make('created_at')
                     ->label('Creado')
                     ->dateTime('d/m/Y H:i')

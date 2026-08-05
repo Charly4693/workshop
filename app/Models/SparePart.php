@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[ObservedBy([SparePartObserver::class])]
 class SparePart extends Model
@@ -30,6 +31,11 @@ class SparePart extends Model
     public function deliveryNotes(): HasMany
     {
         return $this->hasMany(DeliveryNote::class, 'spare_part_id');
+    }
+
+    public function latestDeliveryNote(): HasOne
+    {
+        return $this->hasOne(DeliveryNote::class, 'spare_part_id')->latestOfMany();
     }
 
     public function stateHistories(): HasMany

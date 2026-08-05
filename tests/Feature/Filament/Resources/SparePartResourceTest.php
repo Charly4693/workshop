@@ -5,6 +5,7 @@ namespace Tests\Feature\Filament\Resources;
 use App\Filament\Resources\SpareParts\Pages\CreateSparePart;
 use App\Filament\Resources\SpareParts\Pages\EditSparePart;
 use App\Filament\Resources\SpareParts\Pages\ListSpareParts;
+use App\Filament\Resources\SpareParts\RelationManagers\DeliveryNotesRelationManager;
 use App\Filament\Resources\SpareParts\SparePartResource;
 use App\Models\DeliveryNote;
 use App\Models\Factory;
@@ -96,6 +97,39 @@ class SparePartResourceTest extends TestCase
             'factory_id' => $factory->id,
             'state_id' => $repairing->id,
         ]);
+    }
+
+    public function test_spare_parts_show_the_latest_delivery_note_and_their_delivery_note_history(): void
+    {
+        $state = State::create(['name' => 'Entregado']);
+        $factory = $this->createFactory('Fabricante principal');
+        $sparePart = $this->createSparePart('Monedero asociado', $factory, $state);
+        $technician = User::factory()->create(['name' => 'Técnico receptor']);
+        $older = DeliveryNote::create([
+            'spare_part_id' => $sparePart->id,
+            'state_id' => $state->id,
+            'user_id' => $technician->id,
+            'comment' => 'Primera entrega',
+        ]);
+        $older->forceFill(['created_at' => now()->subDay()])->saveQuietly();
+        $newer = DeliveryNote::create([
+            'spare_part_id' => $sparePart->id,
+            'state_id' => $state->id,
+            'user_id' => $technician->id,
+            'comment' => 'Entrega más reciente',
+        ]);
+
+        Livewire::test(ListSpareParts::class)
+            ->assertTableColumnStateSet('latestDeliveryNote.id', $newer->id, $sparePart)
+            ->assertSee("Albarán #{$newer->id}");
+
+        $this->assertContains(DeliveryNotesRelationManager::class, SparePartResource::getRelations());
+
+        Livewire::test(DeliveryNotesRelationManager::class, [
+            'ownerRecord' => $sparePart,
+            'pageClass' => EditSparePart::class,
+        ])
+            ->assertCanSeeTableRecords([$newer, $older], inOrder: true);
     }
 
     public function test_spare_part_form_rejects_missing_and_invalid_data(): void
