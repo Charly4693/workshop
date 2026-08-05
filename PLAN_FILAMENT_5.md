@@ -361,60 +361,38 @@ Prometeo es la fuente de verdad para locales, bares y máquinas. Workshop mantie
 
 **Resultado:** Fase 6 completada. Workshop se conecta a Prometeo con el usuario de solo lectura `workshop_sync@localhost` y sincroniza los tres catálogos manualmente desde `/admin/prometeo-sync` o mediante `php artisan prometeo:sync`. La primera ejecución dejó 17 locales, 41 bares y 2.839 máquinas activas: creó 2.229 máquinas y actualizó 17 locales y 570 máquinas existentes. Una segunda ejecución no detectó cambios, lo que confirma que el proceso es idempotente. Los listados `/admin/locals`, `/admin/bars` y `/admin/machines` son exclusivamente de consulta; las fichas de locales y bares muestran sus máquinas relacionadas, `dbconection` no se renderiza y los albaranes solo ofrecen ubicaciones y máquinas activas. La migración se aplicó en MySQL; Pint, Composer, 40 pruebas con 445 aserciones y la compilación de producción de Vite finalizan correctamente.
 
-## 13. Fase 7: usuarios
+## 13. Fase 7: usuarios (omitida)
 
-### Tareas
+La gestión de usuarios se descarta por decisión funcional. Workshop tendrá una única cuenta administrativa, no expondrá un `UserResource` y no incorporará roles ni permisos diferenciados. Los técnicos son responsables de los repuestos entregados, pero no acceden a la plataforma.
 
-- [ ] Crear `UserResource` visible únicamente para administradores autorizados.
-- [ ] Mostrar nombre, correo, rol y estado de verificación.
-- [ ] Permitir restablecer o cambiar contraseñas de forma segura.
-- [ ] No mostrar hashes ni contraseñas existentes.
-- [ ] Impedir que un administrador elimine accidentalmente su propia cuenta.
-- [ ] Registrar cambios relevantes de permisos.
-- [ ] Valorar MFA para administradores.
+### Decisiones
 
-### Criterios de aceptación
+- [x] Mantener una única cuenta administrativa.
+- [x] No crear un CRUD de usuarios en Filament.
+- [x] No añadir roles, `is_admin` ni un paquete de permisos.
+- [x] Mantener deshabilitado el registro público.
 
-- Solo los perfiles autorizados pueden gestionar usuarios.
-- Las contraseñas siempre se almacenan con hash.
-- Los cambios de rol se validan y quedan protegidos.
+**Resultado:** Fase omitida de forma deliberada al no existir una necesidad funcional de gestionar cuentas desde Workshop.
 
-## 14. Fase 8: dashboard y experiencia de uso
+## 14. Fase 8: dashboard
 
-### Widgets iniciales
+### Widgets acordados
 
-- [ ] Total de albaranes abiertos.
-- [ ] Albaranes por estado.
-- [ ] Repuestos por estado.
-- [ ] Últimos albaranes creados.
-- [ ] Máquinas por local o bar.
-- [ ] Actividad reciente, si se implementa auditoría.
-
-### Navegación propuesta
-
-```text
-Dashboard
-├── Taller
-│   ├── Pedidos / Albaranes
-│   ├── Repuestos
-│   └── Estados
-├── Ubicaciones
-│   ├── Locales
-│   └── Bares
-├── Inventario
-│   └── Máquinas
-├── Proveedores
-│   └── Fabricantes
-└── Administración
-    └── Usuarios
-```
+- [x] Mostrar los últimos 10 albaranes.
+- [x] Mostrar los albaranes agrupados por estado.
+- [x] Mostrar los repuestos agrupados por estado.
+- [x] Mostrar la actividad reciente a partir del historial de estados.
 
 ### Criterios de aceptación
 
-- El menú refleja el vocabulario utilizado por los usuarios del taller.
-- Los widgets no realizan consultas excesivas.
-- La navegación funciona en escritorio y móvil.
-- Los textos se muestran en español.
+- Los dos listados se limitan a los 10 registros más recientes.
+- Los gráficos incluyen todos los estados y sus conteos actuales.
+- Los albaranes sin estado se contabilizan en un grupo independiente.
+- Las filas permiten acceder al albarán o repuesto correspondiente.
+- Las consultas cargan anticipadamente las relaciones mostradas.
+- Los widgets se adaptan a escritorio y móvil y muestran sus textos en español.
+
+**Resultado:** Fase 8 completada. El dashboard de `/admin` muestra los últimos 10 albaranes, dos gráficos de distribución por estado para albaranes y repuestos, y los 10 cambios de estado más recientes. Los listados enlazan con los recursos correspondientes, usan carga anticipada de relaciones y no permiten modificar datos directamente. Los widgets informativos predeterminados de Filament se han retirado para centrar el dashboard en la actividad del taller. Pint, Composer, 43 pruebas con 480 aserciones y la compilación de producción de Vite finalizan correctamente.
 
 ## 15. Estrategia de pruebas
 
