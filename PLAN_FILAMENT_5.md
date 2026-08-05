@@ -379,20 +379,22 @@ La gestión de usuarios se descarta por decisión funcional. Workshop tendrá un
 ### Widgets acordados
 
 - [x] Mostrar los últimos 10 albaranes.
-- [x] Mostrar los albaranes agrupados por estado.
-- [x] Mostrar los repuestos agrupados por estado.
+- [x] Mostrar albaranes y repuestos en un listado conjunto con una pestaña por estado.
+- [x] Paginar de forma independiente los albaranes y los repuestos de cada estado.
 - [x] Mostrar la actividad reciente a partir del historial de estados.
 
 ### Criterios de aceptación
 
-- Los dos listados se limitan a los 10 registros más recientes.
-- Los gráficos incluyen todos los estados y sus conteos actuales.
-- Los albaranes sin estado se contabilizan en un grupo independiente.
+- Los listados recientes se limitan a los 10 registros más nuevos.
+- Cada estado disponible tiene su propia pestaña.
+- Cada pestaña muestra dos tablas: una de albaranes y otra de repuestos.
+- Las dos tablas tienen paginación independiente de 10 registros por página.
+- Cambiar de estado reinicia ambas paginaciones.
 - Las filas permiten acceder al albarán o repuesto correspondiente.
 - Las consultas cargan anticipadamente las relaciones mostradas.
 - Los widgets se adaptan a escritorio y móvil y muestran sus textos en español.
 
-**Resultado:** Fase 8 completada. El dashboard de `/admin` muestra los últimos 10 albaranes, dos gráficos de distribución por estado para albaranes y repuestos, y los 10 cambios de estado más recientes. Los listados enlazan con los recursos correspondientes, usan carga anticipada de relaciones y no permiten modificar datos directamente. Los widgets informativos predeterminados de Filament se han retirado para centrar el dashboard en la actividad del taller. Pint, Composer, 43 pruebas con 480 aserciones y la compilación de producción de Vite finalizan correctamente.
+**Resultado:** Fase 8 completada. El dashboard de `/admin` muestra los últimos 10 albaranes, un bloque con pestañas por estado que contiene dos tablas paginadas e independientes de albaranes y repuestos, y los 10 cambios de estado más recientes. Los listados enlazan con los recursos correspondientes, usan carga anticipada de relaciones y no permiten modificar datos directamente. Los widgets informativos predeterminados de Filament se han retirado para centrar el dashboard en la actividad del taller. Pint, Composer, 43 pruebas con 493 aserciones y la compilación de producción de Vite finalizan correctamente.
 
 ## 15. Estrategia de pruebas
 

@@ -2,10 +2,9 @@
 
 namespace Tests\Feature\Filament;
 
-use App\Filament\Widgets\DeliveryNotesByState;
 use App\Filament\Widgets\LatestDeliveryNotes;
 use App\Filament\Widgets\RecentStateChanges;
-use App\Filament\Widgets\SparePartsByState;
+use App\Filament\Widgets\StateCatalogLists;
 use App\Models\DeliveryNote;
 use App\Models\Factory;
 use App\Models\SparePart;
@@ -32,45 +31,43 @@ class DashboardWidgetsTest extends TestCase
         Filament::setCurrentPanel(Filament::getPanel('admin'));
     }
 
-    public function test_the_dashboard_registers_the_four_requested_widgets(): void
+    public function test_the_dashboard_registers_the_requested_widgets(): void
     {
         $widgets = Filament::getPanel('admin')->getWidgets();
 
         $this->assertContains(LatestDeliveryNotes::class, $widgets);
-        $this->assertContains(DeliveryNotesByState::class, $widgets);
-        $this->assertContains(SparePartsByState::class, $widgets);
+        $this->assertContains(StateCatalogLists::class, $widgets);
         $this->assertContains(RecentStateChanges::class, $widgets);
 
         $this->get('/admin')->assertOk();
 
         Livewire::test(LatestDeliveryNotes::class)->assertSee('Últimos 10 albaranes');
-        Livewire::test(DeliveryNotesByState::class)->assertSee('Albaranes por estado');
-        Livewire::test(SparePartsByState::class)->assertSee('Repuestos por estado');
+        Livewire::test(StateCatalogLists::class)->assertSee('Albaranes y repuestos por estado');
         Livewire::test(RecentStateChanges::class)->assertSee('Actividad reciente');
     }
 
-    public function test_state_widgets_group_delivery_notes_and_spare_parts(): void
+    public function test_state_tabs_filter_both_paginated_lists_independently(): void
     {
         $workshop = State::create(['name' => 'Taller']);
         $repairing = State::create(['name' => 'Reparación']);
         $factory = $this->createFactory();
-        $workshopParts = collect(range(1, 3))->map(fn (int $index): SparePart => SparePart::create([
-            'name' => "Repuesto taller {$index}",
+        $workshopParts = collect(range(1, 11))->map(fn (int $index): SparePart => SparePart::create([
+            'name' => 'Pieza-T-'.str_pad((string) $index, 3, '0', STR_PAD_LEFT),
             'factory_id' => $factory->id,
             'state_id' => $workshop->id,
         ]));
         $repairingParts = collect(range(1, 2))->map(fn (int $index): SparePart => SparePart::create([
-            'name' => "Repuesto reparación {$index}",
+            'name' => 'Pieza-R-'.str_pad((string) $index, 3, '0', STR_PAD_LEFT),
             'factory_id' => $factory->id,
             'state_id' => $repairing->id,
         ]));
 
-        foreach (range(1, 4) as $index) {
+        foreach ($workshopParts as $index => $sparePart) {
             DeliveryNote::create([
-                'spare_part_id' => $workshopParts->first()->id,
+                'spare_part_id' => $sparePart->id,
                 'state_id' => $workshop->id,
                 'user_id' => $this->admin->id,
-                'comment' => "Albarán de taller {$index}",
+                'comment' => 'Albarán de taller '.($index + 1),
             ]);
         }
 
@@ -83,22 +80,31 @@ class DashboardWidgetsTest extends TestCase
             ]);
         }
 
-        DeliveryNote::create([
-            'spare_part_id' => $workshopParts->first()->id,
-            'state_id' => null,
-            'user_id' => $this->admin->id,
-            'comment' => 'Albarán sin estado',
-        ]);
+        $component = Livewire::test(StateCatalogLists::class)
+            ->assertSet('activeStateId', $repairing->id)
+            ->assertSee('Pieza-R-001')
+            ->assertDontSee('Pieza-T-001')
+            ->call('selectState', $workshop->id)
+            ->assertSet('activeStateId', $workshop->id)
+            ->assertSee('Pieza-T-011')
+            ->assertDontSee('Pieza-T-001');
 
-        $deliveryNoteCounts = Livewire::test(DeliveryNotesByState::class)
-            ->instance()
-            ->getStateCounts();
-        $sparePartCounts = Livewire::test(SparePartsByState::class)
-            ->instance()
-            ->getStateCounts();
+        $this->assertSame(11, $component->instance()->deliveryNotes()->total());
+        $this->assertSame(11, $component->instance()->spareParts()->total());
 
-        $this->assertSame(['Reparación' => 3, 'Taller' => 4, 'Sin estado' => 1], $deliveryNoteCounts);
-        $this->assertSame(['Reparación' => 2, 'Taller' => 3], $sparePartCounts);
+        $component
+            ->call('nextPage', 'deliveryNotesPage')
+            ->assertSet('paginators.deliveryNotesPage', 2)
+            ->assertSet('paginators.sparePartsPage', 1)
+            ->assertSee('Pieza-T-001')
+            ->call('nextPage', 'sparePartsPage')
+            ->assertSet('paginators.deliveryNotesPage', 2)
+            ->assertSet('paginators.sparePartsPage', 2)
+            ->call('selectState', $repairing->id)
+            ->assertSet('paginators.deliveryNotesPage', 1)
+            ->assertSet('paginators.sparePartsPage', 1)
+            ->assertSee('Pieza-R-001')
+            ->assertDontSee('Pieza-T-001');
     }
 
     public function test_recent_tables_are_limited_to_the_latest_ten_records(): void
