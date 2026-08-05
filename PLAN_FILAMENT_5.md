@@ -250,18 +250,18 @@ Los primeros recursos serán los de menor complejidad. Servirán para establecer
 
 ### Formulario
 
-- [ ] Campo de nombre obligatorio.
-- [ ] Selector de fabricante con búsqueda.
-- [ ] Selector de estado con búsqueda.
-- [ ] Validaciones coherentes con la base de datos.
+- [x] Campo de nombre obligatorio.
+- [x] Selector de fabricante con búsqueda.
+- [x] Selector de estado con búsqueda.
+- [x] Validaciones coherentes con la base de datos.
 
 ### Tabla
 
-- [ ] Mostrar nombre, fabricante, estado y fechas relevantes.
-- [ ] Buscar por nombre y fabricante.
-- [ ] Filtrar por fabricante y estado.
-- [ ] Ordenar por nombre y fecha.
-- [ ] Añadir acciones individuales y masivas solo cuando sean seguras.
+- [x] Mostrar nombre, fabricante, estado y fechas relevantes.
+- [x] Buscar por nombre y fabricante.
+- [x] Filtrar por fabricante y estado.
+- [x] Ordenar por nombre y fecha.
+- [x] Añadir acciones individuales y masivas solo cuando sean seguras.
 
 ### Criterios de aceptación
 
@@ -269,6 +269,8 @@ Los primeros recursos serán los de menor complejidad. Servirán para establecer
 - No quedan llamadas `dd(...)` en el flujo nuevo.
 - Las relaciones se cargan sin problemas N+1 relevantes.
 - Los permisos se comprueban para todas las acciones.
+
+**Resultado:** Fase 4 completada. `SparePartResource` incorpora formulario con selectores buscables, tabla con búsqueda, filtros, ordenación y carga anticipada de fabricante y estado. Las eliminaciones individuales y masivas requieren confirmación y conservan los albaranes relacionados con `spare_part_id` nulo. El CRUD Blade de `/spareparts` sigue disponible fuera de `/admin`. Pint, Composer, 28 pruebas con 298 aserciones y la compilación de producción de Vite finalizan correctamente.
 
 ## 11. Fase 5: DeliveryNoteResource
 
