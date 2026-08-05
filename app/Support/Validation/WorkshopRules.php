@@ -4,10 +4,23 @@ namespace App\Support\Validation;
 
 use App\Models\Factory;
 use App\Models\Machine;
+use App\Models\State;
 use Illuminate\Validation\Rule;
 
 final class WorkshopRules
 {
+    public static function state(?State $state = null): array
+    {
+        return [
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('states', 'name')->ignore($state),
+            ],
+        ];
+    }
+
     public static function factory(?Factory $factory = null): array
     {
         return [

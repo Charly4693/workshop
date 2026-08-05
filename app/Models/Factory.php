@@ -21,4 +21,9 @@ class Factory extends Model
     {
         return $this->hasMany(SparePart::class, 'factory_id');
     }
+
+    public function isInUse(): bool
+    {
+        return $this->spareParts()->exists();
+    }
 }

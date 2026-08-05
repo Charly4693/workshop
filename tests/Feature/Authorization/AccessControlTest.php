@@ -78,9 +78,14 @@ class AccessControlTest extends TestCase
 
             $this->assertInstanceOf(AuthenticatedUserPolicy::class, $policy);
 
-            foreach (['viewAny', 'create', 'deleteAny', 'forceDeleteAny', 'restoreAny', 'reorder'] as $ability) {
+            foreach (['viewAny', 'create', 'forceDeleteAny', 'restoreAny', 'reorder'] as $ability) {
                 $this->assertTrue($gate->allows($ability, $modelClass));
             }
+
+            $this->assertSame(
+                ! in_array($modelClass, [Factory::class, State::class], true),
+                $gate->allows('deleteAny', $modelClass),
+            );
 
             foreach (['view', 'update', 'delete', 'forceDelete', 'restore', 'replicate'] as $ability) {
                 $this->assertTrue($gate->allows($ability, $record));

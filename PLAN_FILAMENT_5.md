@@ -223,19 +223,19 @@ Los primeros recursos serán los de menor complejidad. Servirán para establecer
 
 ### 9.1. StateResource
 
-- [ ] Crear un recurso sencillo gestionado mediante modales.
-- [ ] Mostrar nombre y número de repuestos o albaranes relacionados.
-- [ ] Impedir eliminar estados que estén siendo utilizados, salvo decisión explícita.
-- [ ] Añadir búsqueda y ordenación.
+- [x] Crear un recurso sencillo gestionado mediante modales.
+- [x] Mostrar nombre y número de repuestos o albaranes relacionados.
+- [x] Impedir eliminar estados que estén siendo utilizados, salvo decisión explícita.
+- [x] Añadir búsqueda y ordenación.
 
 ### 9.2. FactoryResource
 
-- [ ] Mostrar nombre, ciudad, teléfono, correo electrónico y CIF.
-- [ ] Añadir búsqueda por nombre, ciudad, correo y CIF.
-- [ ] Añadir filtros por ciudad.
-- [ ] Validar correo y CIF.
-- [ ] Evitar duplicados según las reglas de negocio.
-- [ ] Añadir Relation Manager de repuestos si resulta útil.
+- [x] Mostrar nombre, ciudad, teléfono, correo electrónico y CIF.
+- [x] Añadir búsqueda por nombre, ciudad, correo y CIF.
+- [x] Añadir filtros por ciudad.
+- [x] Validar correo y CIF.
+- [x] Evitar duplicados según las reglas de negocio.
+- [x] Añadir Relation Manager de repuestos si resulta útil.
 
 ### Criterios de aceptación
 
@@ -243,6 +243,8 @@ Los primeros recursos serán los de menor complejidad. Servirán para establecer
 - La validación funciona tanto al crear como al editar.
 - No se utilizan controladores ni vistas Blade para estas operaciones dentro de `/admin`.
 - Existen pruebas automatizadas para ambos recursos.
+
+**Resultado:** Fase 3 completada. `StateResource` gestiona estados mediante modales y muestra los contadores de repuestos y albaranes; `FactoryResource` incorpora formulario, búsqueda, filtro por ciudad y un Relation Manager de repuestos de solo lectura. Las Policies impiden eliminar estados o fabricantes utilizados y desactivan su borrado masivo. Pint, Composer, 23 pruebas con 239 aserciones y la compilación de producción de Vite finalizan correctamente.
 
 ## 10. Fase 4: SparePartResource
 

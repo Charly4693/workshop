@@ -20,4 +20,9 @@ class State extends Model
     {
         return $this->hasMany(DeliveryNote::class);
     }
+
+    public function isInUse(): bool
+    {
+        return $this->spareParts()->exists() || $this->deliveryNotes()->exists();
+    }
 }
