@@ -1,0 +1,576 @@
+# Plan de implementación de Filament 5
+
+Fecha de elaboración: 4 de agosto de 2026.
+
+## 1. Objetivo
+
+Migrar progresivamente la interfaz administrativa de Workshop a Filament 5, conservando la base de datos MySQL/MariaDB, los modelos Eloquent y la aplicación Blade actual mientras se valida el nuevo panel.
+
+La implementación se realizará inicialmente en `/admin`. La interfaz existente continuará disponible como vía de respaldo hasta que los recursos de Filament estén terminados, probados y aceptados.
+
+## 2. Alcance
+
+La primera versión del panel deberá cubrir:
+
+- Autenticación de usuarios.
+- Autorización de acceso al panel.
+- Gestión de fabricantes.
+- Gestión de estados.
+- Gestión de repuestos.
+- Gestión de pedidos o albaranes.
+- Gestión de locales.
+- Gestión de bares.
+- Gestión de máquinas.
+- Gestión restringida de usuarios.
+- Dashboard con indicadores básicos.
+
+Quedan fuera de la primera versión:
+
+- Una API pública.
+- Multi-tenancy.
+- Aplicación móvil.
+- Eliminación inmediata de la interfaz Blade existente.
+
+## 3. Principios de la migración
+
+1. No realizar una reescritura completa.
+2. Mantener la interfaz actual durante la transición.
+3. No modificar ni eliminar datos existentes sin copia de seguridad.
+4. Corregir primero las incoherencias del dominio que puedan afectar a Filament.
+5. Aplicar autorización explícita desde el primer recurso.
+6. Migrar primero los recursos sencillos y dejar los flujos complejos para fases posteriores.
+7. Retirar el código antiguo únicamente cuando exista equivalencia funcional y pruebas.
+
+## 4. Estado técnico de partida
+
+- PHP 8.2.
+- Laravel 11.46.
+- MySQL mediante MariaDB 10.4 de XAMPP.
+- Base de datos activa: `workshop`.
+- Autenticación actual proporcionada por Laravel UI.
+- Interfaz Blade con Bootstrap 5.
+- Dependencias PHP instaladas.
+- Dependencias frontend todavía no instaladas en `node_modules`.
+- Diez migraciones ejecutadas.
+- Datos existentes de usuarios, fabricantes, estados, repuestos, locales, bares, máquinas y albaranes.
+
+El proyecto cumple los requisitos de PHP y Laravel de Filament 5. Será necesario incorporar las dependencias frontend requeridas por Filament y Tailwind CSS 4.1.
+
+## 5. Arquitectura objetivo
+
+La aplicación tendrá temporalmente dos interfaces:
+
+```text
+Laravel
+├── Interfaz Blade actual
+│   ├── Rutas existentes
+│   ├── Controladores CRUD actuales
+│   └── Bootstrap 5
+├── Panel Filament
+│   ├── /admin
+│   ├── Recursos CRUD
+│   ├── Páginas personalizadas
+│   ├── Widgets
+│   └── Tailwind CSS
+├── Modelos Eloquent compartidos
+├── Policies compartidas
+└── Base MySQL/MariaDB compartida
+```
+
+Filament y Blade compartirán los mismos modelos y datos. Los estilos de Bootstrap y Tailwind no deberán mezclarse globalmente; cada interfaz utilizará su propio layout y sus propios recursos.
+
+## 6. Preparación previa
+
+### 6.1. Copias de seguridad
+
+- [x] Crear una copia de seguridad completa de la base `workshop`.
+- [x] Verificar que la copia puede restaurarse.
+- [x] Crear una rama de trabajo dedicada a Filament.
+- [x] Registrar el estado de las migraciones antes de instalar paquetes.
+- [x] Registrar los conteos de las tablas principales.
+
+#### Registro de preparación
+
+- Rama: `feature/migracion-filament`.
+- Backup verificado: `backups/workshop_verified_20260804_134920.sql`.
+- Tamaño: 113.503 bytes.
+- SHA-256: `FE2A6377A6318B4222F3CB759CAE71352F31D83987081A527E56B5241ECE8A72`.
+- Estructura detectada en el volcado: 16 sentencias `CREATE TABLE`.
+- Datos detectados en el volcado: 10 sentencias `INSERT`.
+- Marcador de finalización de `mysqldump`: presente.
+- Migraciones iniciales: 10 ejecutadas, todas en el lote 1.
+- Conteos: 16 usuarios, 16 fabricantes, 5 estados, 17 repuestos, 17 locales, 41 bares, 610 máquinas y 20 albaranes.
+- Restauración controlada: completada en una base temporal aislada; los ocho conteos principales coincidieron y la base temporal fue eliminada.
+
+### 6.2. Correcciones del modelo de dominio
+
+- [x] Añadir a `Bar::$fillable` los campos `holder`, `dni_cif`, `address` y `town`.
+- [x] Añadir `bar_id` a `Machine::$fillable`.
+- [x] Revisar si una máquina debe pertenecer obligatoriamente a un local, a un bar o a uno de los dos.
+- [x] Alinear la nulabilidad de `SparePart::state_id` entre migración, modelo y validación.
+- [x] Revisar las reglas de eliminación en cascada.
+- [x] Revisar la relación jerárquica `Machine::parent_id`.
+- [x] Añadir las relaciones inversas que necesiten los Relation Managers.
+- [x] Extraer validaciones reutilizables cuando exista lógica compartida.
+
+#### Decisiones de dominio
+
+- Cada máquina debe pertenecer exactamente a un local o a un bar. Se verificaron 610 registros existentes: 561 pertenecen a un local, 49 a un bar y no hay registros con ambas ubicaciones o sin ubicación.
+- Una máquina hija debe compartir ubicación con su máquina padre y no se permiten autorreferencias ni ciclos.
+- Todos los repuestos deben tener estado; la validación se ha alineado con la columna obligatoria existente.
+- Los albaranes se conservan al eliminar entidades relacionadas y sus claves externas pasan a `NULL`.
+- No se puede eliminar un local, bar, fabricante o estado mientras mantenga inventario dependiente.
+- Al eliminar una máquina padre, las máquinas hijas se conservan y `parent_id` pasa a `NULL`.
+- Las reglas compartidas para fabricantes, repuestos, máquinas y albaranes viven en `WorkshopRules`.
+- La migración reversible `2026_08_04_140000_harden_foreign_key_delete_rules` se aplicó en el lote 2.
+
+### 6.3. Seguridad de datos
+
+- [ ] Retirar contraseñas e información sensible de los seeders. **Excepción aceptada:** por decisión expresa del propietario, `LocalSeeder` vuelve a incluir las conexiones originales con sus IP y credenciales.
+- [ ] Rotar las credenciales expuestas si son reales. **Acción externa pendiente:** requiere acceso a los sistemas propietarios y no puede completarse desde este repositorio.
+- [x] Evitar mostrar contraseñas de conexiones locales en tablas o formularios.
+- [x] Definir si `dbconection` debe permanecer como JSON o pasar a una entidad protegida.
+- [x] Sustituir datos personales reales por fixtures ficticios en desarrollo.
+
+#### Decisiones de seguridad
+
+- Los seeders son idempotentes. `LocalSeeder` es la excepción al uso de datos ficticios: contiene el inventario y las conexiones originales por decisión expresa del propietario.
+- El usuario de desarrollo solo se crea si `SEED_ADMIN_PASSWORD` está definido en el entorno.
+- `Local::dbconection` permanece temporalmente como JSON para evitar una migración de datos prematura, pero está oculto en la serialización y no se mostrará en recursos Filament.
+- Antes de implementar la edición de conexiones se diseñará una entidad cifrada o un almacén de secretos. El JSON actual será de solo lectura o quedará fuera del panel.
+- `LocalSeeder` contiene actualmente IP, puertos, usuarios y contraseñas de conexión. El propietario ha aceptado expresamente este riesgo; la rotación y el saneamiento del historial continúan recomendados antes de publicar el repositorio.
+
+### 6.4. Verificación de la preparación
+
+- [x] Ejecutar análisis sintáctico de los archivos PHP modificados.
+- [x] Formatear el código PHP con Laravel Pint.
+- [x] Ejecutar la suite sobre SQLite en memoria sin tocar MySQL.
+- [x] Probar que los seeders son idempotentes.
+- [x] Registrar la reintroducción deliberada de datos sensibles en `LocalSeeder` y la aceptación del riesgo.
+- [x] Aplicar la migración de endurecimiento sobre MySQL.
+- [x] Confirmar que los conteos de datos productivos no cambian.
+- [x] Comprobar `/login`, `/factories`, `/spareparts` y `/deliverynotes` mediante HTTP.
+
+Resultado: 7 pruebas y 23 aserciones superadas. Las cuatro pantallas comprobadas responden con HTTP 200 y los conteos principales de MySQL permanecen intactos.
+
+**Estado de la preparación:** completada técnicamente con una excepción de seguridad aceptada por el propietario: `LocalSeeder` conserva las conexiones originales. La rotación de credenciales externas y el saneamiento del historial Git permanecen recomendados antes de publicar o desplegar el repositorio fuera del entorno controlado.
+
+## 7. Fase 1: instalación del panel
+
+### Tareas
+
+- [x] Instalar `filament/filament` 5.x mediante Composer.
+- [x] Ejecutar la instalación del Panel Builder.
+- [x] No utilizar `filament:install --scaffold`, para evitar sobrescribir archivos existentes.
+- [x] Confirmar el registro de `AdminPanelProvider` en `bootstrap/providers.php`.
+- [x] Configurar el panel con identificador `admin` y ruta `/admin`.
+- [x] Configurar nombre, logotipo, colores y zona horaria.
+- [x] Configurar idioma español.
+- [x] Mantener desactivado el registro público desde el panel.
+- [x] Mantener las rutas Blade actuales sin cambios.
+- [x] Instalar las dependencias frontend necesarias.
+- [x] Compilar los recursos y comprobar que Bootstrap no interfiere con Filament.
+
+### Criterios de aceptación
+
+- `/admin` muestra la pantalla de acceso de Filament.
+- La interfaz Blade existente continúa funcionando.
+- No se han alterado tablas ni datos de negocio.
+- Los recursos frontend compilan sin errores.
+- No existen colisiones visuales entre Bootstrap y Tailwind.
+
+**Resultado:** Fase 1 completada con Filament 5.7.5. `/admin` redirige al acceso de Filament en español, el registro público del panel no existe y `/login` sigue disponible. El panel carga sus recursos propios sin incluir el Bootstrap de las vistas Blade. Composer, 10 pruebas con 34 aserciones y la compilación de producción de Vite finalizan correctamente.
+
+## 8. Fase 2: autenticación y autorización
+
+### Modelo de acceso
+
+La aplicación tendrá una sola cuenta, que actuará como administrador. Los pedidos de los técnicos se reciben por correo electrónico, por lo que no se crearán cuentas, roles ni permisos diferenciados para ellos.
+
+Decisiones:
+
+- No se añade `is_admin`, una columna de rol ni un paquete de permisos.
+- Cualquier usuario autenticado puede acceder al panel `admin`; la aplicación mantendrá una única cuenta.
+- No se expondrá gestión de usuarios ni registro público.
+- Las Policies siguen siendo obligatorias para que todos los recursos tengan autorización explícita.
+
+### Tareas
+
+- [x] Documentar el modelo de acceso de una sola cuenta administrativa.
+- [x] Implementar `FilamentUser` en el modelo `User`.
+- [x] Implementar `canAccessPanel()` para el panel `admin`.
+- [x] Crear Policies completas para todos los modelos administrados.
+- [x] Activar `strictAuthorization()` en el panel.
+- [x] Conservar temporalmente el login de Laravel UI.
+- [x] Proteger los CRUD Blade mediante autenticación y Policies.
+- [x] Deshabilitar el registro público duplicado en `routes/web.php`.
+- [x] Probar accesos autenticados, redirecciones de invitados y Policies.
+
+### Criterios de aceptación
+
+- El usuario autenticado puede iniciar sesión en `/admin`.
+- Un invitado es redirigido al login desde el panel y los CRUD Blade.
+- Las rutas públicas de registro no existen.
+- Ningún recurso queda accesible por ausencia accidental de una Policy.
+- Las operaciones de crear, ver, editar y eliminar respetan los permisos definidos.
+
+**Resultado:** Fase 2 completada sin roles, `is_admin` ni cambios de esquema. La cuenta autenticada accede a `/admin`, todos los modelos previstos tienen una Policy completa, los CRUD Blade exigen autenticación y autorización, y `/register` no existe. Composer y 15 pruebas con 143 aserciones finalizan correctamente.
+
+## 9. Fase 3: recursos piloto
+
+Los primeros recursos serán los de menor complejidad. Servirán para establecer convenciones de código, navegación, formularios, tablas y pruebas.
+
+### 9.1. StateResource
+
+- [x] Crear un recurso sencillo gestionado mediante modales.
+- [x] Mostrar nombre y número de repuestos o albaranes relacionados.
+- [x] Impedir eliminar estados que estén siendo utilizados, salvo decisión explícita.
+- [x] Añadir búsqueda y ordenación.
+
+### 9.2. FactoryResource
+
+- [x] Mostrar nombre, ciudad, teléfono, correo electrónico y CIF.
+- [x] Añadir búsqueda por nombre, ciudad, correo y CIF.
+- [x] Añadir filtros por ciudad.
+- [x] Validar correo y CIF.
+- [x] Evitar duplicados según las reglas de negocio.
+- [x] Añadir Relation Manager de repuestos si resulta útil.
+
+### Criterios de aceptación
+
+- Se pueden listar, crear, editar y eliminar registros según los permisos.
+- La validación funciona tanto al crear como al editar.
+- No se utilizan controladores ni vistas Blade para estas operaciones dentro de `/admin`.
+- Existen pruebas automatizadas para ambos recursos.
+
+**Resultado:** Fase 3 completada. `StateResource` gestiona estados mediante modales y muestra los contadores de repuestos y albaranes; `FactoryResource` incorpora formulario, búsqueda, filtro por ciudad y un Relation Manager de repuestos de solo lectura. Las Policies impiden eliminar estados o fabricantes utilizados y desactivan su borrado masivo. Pint, Composer, 23 pruebas con 239 aserciones y la compilación de producción de Vite finalizan correctamente.
+
+## 10. Fase 4: SparePartResource
+
+### Formulario
+
+- [x] Campo de nombre obligatorio.
+- [x] Selector de fabricante con búsqueda.
+- [x] Selector de estado con búsqueda.
+- [x] Validaciones coherentes con la base de datos.
+
+### Tabla
+
+- [x] Mostrar nombre, fabricante, estado y fechas relevantes.
+- [x] Mostrar el último albarán asociado y el historial completo de albaranes del repuesto.
+- [x] Buscar por nombre y fabricante.
+- [x] Filtrar por fabricante y estado.
+- [x] Ordenar por nombre y fecha.
+- [x] Añadir acciones individuales y masivas solo cuando sean seguras.
+
+### Criterios de aceptación
+
+- El recurso sustituye funcionalmente al CRUD Blade de repuestos.
+- No quedan llamadas `dd(...)` en el flujo nuevo.
+- Las relaciones se cargan sin problemas N+1 relevantes.
+- Los permisos se comprueban para todas las acciones.
+
+**Resultado:** Fase 4 completada. `SparePartResource` incorpora formulario con selectores buscables, tabla con búsqueda, filtros, ordenación y carga anticipada de fabricante y estado. Las eliminaciones individuales y masivas requieren confirmación y conservan los albaranes relacionados con `spare_part_id` nulo. El CRUD Blade de `/spareparts` sigue disponible fuera de `/admin`. Pint, Composer, 28 pruebas con 298 aserciones y la compilación de producción de Vite finalizan correctamente.
+
+## 11. Fase 5: DeliveryNoteResource
+
+Este será el recurso principal del panel y requerirá mayor diseño funcional.
+
+### Formulario
+
+- [x] Selección de repuesto.
+- [x] Selección de estado.
+- [x] Selección del técnico receptor y responsable de la devolución.
+- [x] Selección de local o bar.
+- [x] Selección de máquina filtrada por el local o bar elegido.
+- [x] Campo de comentarios.
+- [x] Campos reactivos para evitar combinaciones incoherentes.
+- [x] Validación de que la máquina pertenece a la ubicación seleccionada.
+
+### Tabla
+
+- [x] Mostrar repuesto, estado, responsable, ubicación, máquina y fecha.
+- [x] Búsqueda global por los campos relevantes.
+- [x] Filtros por estado, usuario, local, bar, máquina y rango de fechas.
+- [x] Indicadores visuales para los estados.
+- [x] Orden predeterminado por registros más recientes.
+- [x] Acciones para cambios frecuentes de estado.
+
+### Flujo de estados
+
+- [x] Definir las transiciones válidas entre estados.
+- [x] Decidir si los estados de repuestos y albaranes deben compartir la misma tabla.
+- [x] Registrar quién realiza cada cambio si se necesita trazabilidad.
+- [x] Considerar una tabla de historial de estados.
+
+### Criterios de aceptación
+
+- El recurso cubre creación, consulta, edición y eliminación de albaranes.
+- Las combinaciones de local, bar y máquina son coherentes.
+- Los filtros responden con el volumen actual de datos.
+- Las acciones sensibles están autorizadas y, si procede, usan transacciones.
+
+**Resultado:** Fase 5 completada. `DeliveryNoteResource` permite gestionar albaranes con selección reactiva de local o bar y máquinas filtradas por ubicación; `user_id` identifica al técnico receptor. La tabla incorpora búsqueda, filtros completos, estados visuales, orden cronológico y una acción rápida para cambiar el estado. Los estados de albaranes y repuestos comparten el catálogo `states`; el administrador puede realizar cualquier transición configurada y repetir el mismo estado no genera historial. `DeliveryNoteWorkflow` guarda el albarán, sincroniza el estado actual de la pieza y registra la transición dentro de una transacción. El historial es inmutable, conserva el usuario que efectuó el cambio y se consulta desde cada repuesto. La migración se aplicó en MySQL y creó el estado inicial de las piezas existentes. El CRUD Blade de `/deliverynotes` continúa disponible durante la transición. Pint, Composer, 34 pruebas con 379 aserciones y la compilación de producción de Vite finalizan correctamente.
+
+## 12. Fase 6: sincronización manual con Prometeo
+
+Prometeo es la fuente de verdad para locales, bares y máquinas. Workshop mantiene una copia local con los mismos identificadores para conservar sus claves foráneas y permitir que los albaranes funcionen aunque Prometeo no esté disponible temporalmente. Estos datos no tendrán CRUD en Filament.
+
+### Preparación y conexión
+
+- [x] Crear el usuario MySQL `workshop_sync` con acceso `SELECT` limitado a `prometeo`.
+- [x] Configurar una segunda conexión Laravel llamada `prometeo`.
+- [x] Comprobar la conexión efectiva como `workshop_sync@localhost`.
+- [x] Inspeccionar las tablas y relaciones de `prometeo.locals`, `prometeo.bars` y `prometeo.machines`.
+- [x] Confirmar que las claves primarias existentes coinciden entre Prometeo y Workshop.
+
+### Adaptación del esquema local
+
+- [x] Añadir el tipo de máquina `AADD`, presente en Prometeo.
+- [x] Añadir un indicador de actividad para conservar como inactivos los registros eliminados en Prometeo.
+- [x] Mantener `dbconection` oculto y fuera de listados, logs y resultados de sincronización.
+- [x] Revisar los registros locales existentes antes de sobrescribir sus datos con Prometeo.
+
+### Servicio de sincronización
+
+- [x] Sincronizar locales mediante `upsert` usando el `id` de Prometeo.
+- [x] Sincronizar bares mediante `upsert` usando el `id` de Prometeo.
+- [x] Sincronizar máquinas en dos pasos: datos y ubicación primero, relación padre-hijo después.
+- [x] Marcar como inactivos los registros que ya no existan en Prometeo, sin eliminarlos.
+- [x] Impedir ejecuciones simultáneas mediante un bloqueo.
+- [x] Ejecutar las escrituras locales dentro de una transacción.
+- [x] Registrar fecha, duración, resultado y contadores de cada sincronización.
+
+### Ejecución manual
+
+- [x] Crear el comando `php artisan prometeo:sync`.
+- [x] Crear una página de Filament con el estado de la última sincronización.
+- [x] Añadir el botón protegido «Sincronizar con Prometeo» con confirmación.
+- [x] Mostrar una notificación con los registros creados, actualizados, inactivados y los errores.
+- [x] Mantener locales, bares y máquinas como datos de consulta sin acciones CRUD.
+- [x] Mostrar en las fichas de locales y bares un listado de sus máquinas relacionadas.
+- [x] Mostrar únicamente registros activos en los selectores de albaranes.
+
+### Criterios de aceptación
+
+- El botón actualiza los tres catálogos manteniendo los identificadores de Prometeo.
+- Los albaranes conservan sus relaciones históricas aunque un registro desaparezca de Prometeo.
+- La jerarquía y la ubicación de las máquinas se sincronizan sin referencias incompletas.
+- Un fallo no deja una sincronización aplicada parcialmente.
+- Workshop nunca escribe en la base de datos de Prometeo.
+- No se exponen credenciales ni valores de `dbconection`.
+
+**Resultado:** Fase 6 completada. Workshop se conecta a Prometeo con el usuario de solo lectura `workshop_sync@localhost` y sincroniza los tres catálogos manualmente desde `/admin/prometeo-sync` o mediante `php artisan prometeo:sync`. La primera ejecución dejó 17 locales, 41 bares y 2.839 máquinas activas: creó 2.229 máquinas y actualizó 17 locales y 570 máquinas existentes. Una segunda ejecución no detectó cambios, lo que confirma que el proceso es idempotente. Los listados `/admin/locals`, `/admin/bars` y `/admin/machines` son exclusivamente de consulta; las fichas de locales y bares muestran sus máquinas relacionadas, `dbconection` no se renderiza y los albaranes solo ofrecen ubicaciones y máquinas activas. La migración se aplicó en MySQL; Pint, Composer, 40 pruebas con 445 aserciones y la compilación de producción de Vite finalizan correctamente.
+
+## 13. Fase 7: usuarios (omitida)
+
+La gestión de usuarios se descarta por decisión funcional. Workshop tendrá una única cuenta administrativa, no expondrá un `UserResource` y no incorporará roles ni permisos diferenciados. Los técnicos son responsables de los repuestos entregados, pero no acceden a la plataforma.
+
+### Decisiones
+
+- [x] Mantener una única cuenta administrativa.
+- [x] No crear un CRUD de usuarios en Filament.
+- [x] No añadir roles, `is_admin` ni un paquete de permisos.
+- [x] Mantener deshabilitado el registro público.
+
+**Resultado:** Fase omitida de forma deliberada al no existir una necesidad funcional de gestionar cuentas desde Workshop.
+
+## 14. Fase 8: dashboard
+
+### Widgets acordados
+
+- [x] Mostrar los últimos 10 albaranes.
+- [x] Mostrar los albaranes en un listado con una pestaña por estado.
+- [x] Paginar los albaranes de cada estado de cinco en cinco.
+- [x] Mostrar la actividad reciente a partir del historial de estados.
+- [x] Aplicar el azul corporativo `#3A53CD` del logotipo a los elementos principales del panel.
+
+### Criterios de aceptación
+
+- Los listados recientes se limitan a los 10 registros más nuevos.
+- Cada estado disponible tiene su propia pestaña.
+- Cada pestaña muestra la tabla de albaranes del estado seleccionado.
+- La tabla tiene una paginación de 5 registros por página.
+- El bloque mantiene una altura fija para evitar saltos visuales entre estados.
+- Cambiar de estado reinicia la paginación.
+- Las filas permiten acceder al albarán y consultar desde él su repuesto.
+- Las consultas cargan anticipadamente las relaciones mostradas.
+- Los widgets se adaptan a escritorio y móvil y muestran sus textos en español.
+- Los botones, pestañas activas, enlaces y detalles principales utilizan el azul del logotipo.
+
+**Resultado:** Fase 8 completada. El dashboard de `/admin` muestra los últimos 10 albaranes, un bloque de altura fija con pestañas por estado y paginación de 5 registros, y los 10 cambios de estado más recientes. El listado independiente de repuestos por estado se ha retirado porque cada albarán ya permite consultar su repuesto. Los listados enlazan con los recursos correspondientes, usan carga anticipada de relaciones y no permiten modificar datos directamente. El panel utiliza el azul corporativo `#3A53CD` extraído del logotipo. Los widgets informativos predeterminados de Filament se han retirado para centrar el dashboard en la actividad del taller. Pint, Composer, 44 pruebas con 492 aserciones y la compilación de producción de Vite finalizan correctamente.
+
+## 15. Estrategia de pruebas
+
+### Pruebas de dominio
+
+- [ ] Relaciones entre modelos.
+- [ ] Reglas de asignación de local o bar a una máquina.
+- [ ] Jerarquía padre-hijo de máquinas.
+- [ ] Transiciones de estados.
+- [ ] Validaciones reutilizadas por Filament.
+
+### Pruebas de recursos
+
+- [ ] Acceso a listados.
+- [ ] Creación de registros.
+- [ ] Edición de registros.
+- [ ] Eliminación y restricciones.
+- [ ] Búsquedas y filtros.
+- [ ] Acciones individuales y masivas.
+- [ ] Campos reactivos.
+
+### Pruebas de seguridad
+
+- [ ] Usuario no autenticado.
+- [ ] Usuario autenticado sin acceso al panel.
+- [ ] Usuario con permisos de solo lectura.
+- [ ] Usuario con permisos de edición.
+- [ ] Administrador.
+- [ ] Acciones personalizadas y llamadas Livewire.
+
+### Pruebas de regresión
+
+- [ ] La interfaz Blade existente continúa funcionando durante la migración.
+- [ ] Las operaciones realizadas desde Filament son visibles en la interfaz antigua.
+- [ ] Las operaciones antiguas son visibles en Filament.
+- [ ] Las sesiones y el inicio de sesión siguen funcionando.
+
+## 16. Observabilidad y auditoría
+
+- [ ] Configurar logs de errores de Filament y Livewire.
+- [ ] Evitar registrar contraseñas, tokens o conexiones completas.
+- [ ] Valorar un historial de cambios para albaranes y permisos.
+- [ ] Registrar actor, fecha y operación en acciones críticas.
+- [ ] Añadir indicadores para errores recurrentes y trabajos fallidos.
+
+## 17. Rendimiento
+
+- [ ] Revisar consultas N+1 en columnas relacionadas.
+- [ ] Añadir índices a campos utilizados en filtros y búsquedas.
+- [ ] Limitar opciones precargadas en selects con muchos registros.
+- [ ] Utilizar búsquedas remotas para relaciones grandes.
+- [ ] Paginar listados.
+- [ ] Medir widgets y consultas del dashboard.
+- [ ] Probar el recurso de máquinas con el volumen real existente.
+
+## 18. Despliegue progresivo
+
+### Entorno local
+
+- [ ] Instalar y configurar Filament.
+- [ ] Ejecutar migraciones nuevas.
+- [ ] Crear recursos y pruebas.
+- [ ] Validar con una copia de los datos.
+
+### Entorno de pruebas
+
+- [ ] Restaurar una copia anonimizada de producción.
+- [ ] Probar permisos con diferentes perfiles.
+- [ ] Ejecutar la suite completa.
+- [ ] Validar tiempos de carga.
+- [ ] Obtener aceptación de usuarios del taller.
+
+### Producción
+
+- [ ] Crear copia de seguridad inmediatamente antes del despliegue.
+- [ ] Instalar dependencias con versiones bloqueadas.
+- [ ] Ejecutar migraciones con procedimiento de reversión.
+- [ ] Compilar recursos frontend para producción.
+- [ ] Limpiar y reconstruir cachés de Laravel.
+- [ ] Habilitar `/admin` solo para usuarios autorizados.
+- [ ] Mantener temporalmente la interfaz anterior.
+- [ ] Monitorizar errores y rendimiento.
+
+## 19. Retirada de la interfaz antigua
+
+La retirada se realizará módulo a módulo, no de una sola vez.
+
+Para retirar un CRUD antiguo deben cumplirse estas condiciones:
+
+- [ ] Existe un recurso Filament equivalente.
+- [ ] Se han validado todas sus operaciones.
+- [ ] Existen Policies y pruebas de autorización.
+- [ ] Los usuarios responsables han aceptado el nuevo flujo.
+- [ ] No quedan enlaces internos dependientes de las rutas antiguas.
+- [ ] Existe un procedimiento de reversión.
+
+Después de cumplirlas:
+
+- [ ] Redirigir las rutas antiguas al recurso correspondiente.
+- [ ] Observar el comportamiento durante un periodo acordado.
+- [ ] Eliminar las vistas Blade obsoletas.
+- [ ] Eliminar los controladores sin uso.
+- [ ] Eliminar las rutas antiguas.
+- [ ] Retirar estilos y scripts exclusivos de la interfaz eliminada.
+- [ ] Evaluar la retirada de Laravel UI si Filament asume toda la autenticación.
+
+## 20. Estrategia de reversión
+
+- Mantener la interfaz Blade durante toda la migración.
+- No eliminar columnas ni tablas en las primeras fases.
+- Realizar nuevas migraciones de manera reversible.
+- Conservar copias de seguridad verificadas.
+- Poder desregistrar temporalmente el panel Filament sin afectar a los modelos.
+- Revertir el despliegue de código antes de restaurar la base, salvo que una migración haya modificado datos.
+- Documentar cualquier transformación irreversible antes de ejecutarla.
+
+## 21. Riesgos y mitigaciones
+
+| Riesgo | Impacto | Mitigación |
+| --- | --- | --- |
+| Acceso administrativo demasiado amplio | Crítico | `FilamentUser`, Policies y `strictAuthorization()`. |
+| Exposición de credenciales de locales | Crítico | Campos protegidos, cifrado y exclusión de tablas y logs. |
+| Incoherencias actuales del modelo | Alto | Corregirlas antes de generar recursos complejos. |
+| Colisión entre Bootstrap y Tailwind | Medio | Layouts y recursos separados. |
+| Pérdida o alteración de datos | Alto | Copias verificadas y migraciones reversibles. |
+| Dependencia excesiva de código generado | Medio | Convenciones, revisión y servicios de dominio. |
+| Acciones Livewire no autorizadas | Alto | Policies, autorización explícita y pruebas. |
+| Consultas lentas en máquinas y relaciones | Medio | Índices, búsqueda remota, paginación y medición. |
+| Duplicidad temporal de interfaces | Medio | Calendario de retirada y equivalencia funcional documentada. |
+
+## 22. Orden recomendado de implementación
+
+1. Copia de seguridad y rama de trabajo.
+2. Correcciones de modelos y seguridad de seeders.
+3. Instalación del panel en `/admin`.
+4. Autenticación, roles, Policies y autorización estricta.
+5. `StateResource`.
+6. `FactoryResource`.
+7. `SparePartResource`.
+8. `DeliveryNoteResource`.
+9. `LocalResource`.
+10. `BarResource`.
+11. `MachineResource`.
+12. `UserResource`.
+13. Dashboard y widgets.
+14. Pruebas integrales y aceptación de usuarios.
+15. Retirada progresiva de la interfaz Blade.
+
+## 23. Definición de terminado
+
+La migración se considerará terminada cuando:
+
+- Todos los módulos administrativos estén disponibles en Filament.
+- La autorización esté definida mediante Policies y cubierta por pruebas.
+- No se expongan credenciales ni información sensible.
+- Los flujos principales hayan sido validados por usuarios reales.
+- Las búsquedas, filtros y formularios respondan correctamente con el volumen real.
+- Exista una suite de pruebas estable.
+- El despliegue y la reversión estén documentados.
+- Las rutas, controladores y vistas antiguas hayan sido retirados o declarados explícitamente necesarios.
+- `ESTADO.md` y el README reflejen la arquitectura final.
+
+## 24. Primer hito propuesto
+
+El primer hito será un piloto completamente reversible con:
+
+- Filament 5 instalado en `/admin`.
+- Acceso restringido a administradores.
+- Autorización estricta activa.
+- `StateResource` operativo.
+- `FactoryResource` operativo.
+- Pruebas de autenticación, autorización y CRUD.
+- Interfaz Blade intacta.
+
+La continuación hacia repuestos y albaranes dependerá de la aceptación técnica y funcional de este piloto.

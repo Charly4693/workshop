@@ -1,26 +1,20 @@
 <?php
 
 use App\Http\Controllers\DeliveryNoteController;
+use App\Http\Controllers\FactoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SparePartController;
-use App\Http\Controllers\FactoryController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-
-
-
-
-
 
 /*Route::get('/', function () {
     return view('inicio');
 });*/
 
 Auth::routes([
-    'register' => false
+    'register' => false,
 ]);
-
 
 Route::get('/', function () {
     $error = session()->get('error');
@@ -32,11 +26,10 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-Auth::routes();
+Route::middleware('auth')->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-Route::resource('/factories', FactoryController::class);
-Route::resource('/deliverynotes', DeliveryNoteController::class);
-Route::resource('/spareparts', SparePartController::class);
-
+    Route::resource('/factories', FactoryController::class);
+    Route::resource('/deliverynotes', DeliveryNoteController::class);
+    Route::resource('/spareparts', SparePartController::class);
+});

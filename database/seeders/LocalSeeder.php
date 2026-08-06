@@ -212,13 +212,14 @@ class LocalSeeder extends Seeder
             ],*/
         ];
 
-        // Recorremos los datos y creamos los registros correspondientes en la base de datos.
-        collect($data)->each(function ($zone) {
-            Local::create([
-                'name' => $zone['name'],
-                'idMachines' => $zone['idMachines'],
-                'dbconection' => json_encode($zone['dbconnection']),
-            ]);
-        });
+        foreach ($data as $local) {
+            Local::updateOrCreate(
+                ['idMachines' => $local['idMachines']],
+                [
+                    'name' => $local['name'],
+                    'dbconection' => $local['dbconnection'],
+                ],
+            );
+        }
     }
 }

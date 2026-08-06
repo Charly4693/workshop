@@ -1,0 +1,5 @@
+/*
+ * Vite entry point for the legacy Blade interface.
+ * Bootstrap continues to be loaded by the existing layouts from public/bootstrap.
+ * Filament serves its own compiled and scoped assets under public/css/filament.
+ */

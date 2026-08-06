@@ -3,14 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Factory;
+use App\Support\Validation\WorkshopRules;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class FactoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Factory::class, 'factory');
+    }
+
     public function index()
     {
-        $factories = Factory::orderBy('name')->paginate(10);;
+        $factories = Factory::orderBy('name')->paginate(10);
+
         return view('factories.index', compact('factories'));
     }
 
@@ -21,15 +27,7 @@ class FactoryController extends Controller
 
     public function store(Request $request)
     {
-        dd($request->all());
-        $validated = $request->validate([
-            'name'    => ['required', 'string', 'max:255'],
-            'address' => ['required', 'string', 'max:255'],
-            'city'    => ['required', 'string', 'max:100'],
-            'phone'   => ['nullable', 'string', 'max:50'],
-            'email'   => ['required', 'email', 'max:255', 'unique:factories,email'],
-            'cif'     => ['required', 'string', 'max:20', 'unique:factories,cif'],
-        ]);
+        $validated = $request->validate(WorkshopRules::factory());
 
         Factory::create($validated);
 
@@ -45,26 +43,7 @@ class FactoryController extends Controller
 
     public function update(Request $request, Factory $factory)
     {
-        dd($request->all());
-
-        $validated = $request->validate([
-            'name'    => ['required', 'string', 'max:255'],
-            'address' => ['required', 'string', 'max:255'],
-            'city'    => ['required', 'string', 'max:100'],
-            'phone'   => ['nullable', 'string', 'max:50'],
-            'email'   => [
-                'required',
-                'email',
-                'max:255',
-                Rule::unique('factories', 'email')->ignore($factory->id),
-            ],
-            'cif'     => [
-                'required',
-                'string',
-                'max:20',
-                Rule::unique('factories', 'cif')->ignore($factory->id),
-            ],
-        ]);
+        $validated = $request->validate(WorkshopRules::factory($factory));
 
         $factory->update($validated);
 
@@ -75,9 +54,8 @@ class FactoryController extends Controller
 
     public function destroy(Factory $factory)
     {
-        //dd($factory);
-
         $factory->delete();
+
         return redirect()->route('factories.index')->with('status', 'Fábrica eliminada correctamente.');
     }
 }

@@ -3,19 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\Factory;
-use App\Models\State;
 use App\Models\SparePart;
+use App\Models\State;
+use App\Support\Validation\WorkshopRules;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class SparePartController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(SparePart::class, 'sparepart');
+    }
+
     public function index()
     {
         // Traemos fábrica y estado para no hacer N+1
         $spareparts = SparePart::with(['factory:id,name', 'state:id,name'])
-                        ->orderBy('name')
-                        ->paginate(10);
+            ->orderBy('name')
+            ->paginate(10);
 
         return view('spareparts.index', compact('spareparts'));
     }
@@ -23,18 +28,14 @@ class SparePartController extends Controller
     public function create()
     {
         $factories = Factory::orderBy('name')->get(['id', 'name']);
-        $states    = State::orderBy('name')->get(['id', 'name']);
+        $states = State::orderBy('name')->get(['id', 'name']);
+
         return view('spareparts.create', compact('factories', 'states'));
     }
 
     public function store(Request $request)
     {
-        dd($request->all());
-        $validated = $request->validate([
-            'name'       => ['required','string','max:255'],
-            'factory_id' => ['required','exists:factories,id'],
-            'state_id'   => ['nullable','exists:states,id'],
-        ]);
+        $validated = $request->validate(WorkshopRules::sparePart());
 
         SparePart::create($validated);
 
@@ -45,20 +46,15 @@ class SparePartController extends Controller
 
     public function edit(SparePart $sparepart)
     {
-        $factories = Factory::orderBy('name')->get(['id','name']);
-        $states    = State::orderBy('name')->get(['id','name']);
-        return view('spareparts.edit', compact('sparepart','factories','states'));
+        $factories = Factory::orderBy('name')->get(['id', 'name']);
+        $states = State::orderBy('name')->get(['id', 'name']);
+
+        return view('spareparts.edit', compact('sparepart', 'factories', 'states'));
     }
 
     public function update(Request $request, SparePart $sparepart)
     {
-        dd($request->all());
-
-        $validated = $request->validate([
-            'name'       => ['required','string','max:255'],
-            'factory_id' => ['required','exists:factories,id'],
-            'state_id'   => ['nullable','exists:states,id'],
-        ]);
+        $validated = $request->validate(WorkshopRules::sparePart());
 
         $sparepart->update($validated);
 
@@ -69,8 +65,6 @@ class SparePartController extends Controller
 
     public function destroy(SparePart $sparepart)
     {
-        dd($sparepart);
-
         $sparepart->delete();
 
         return redirect()

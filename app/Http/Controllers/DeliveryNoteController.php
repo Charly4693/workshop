@@ -3,16 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bar;
+use App\Models\DeliveryNote;
 use App\Models\Local;
 use App\Models\Machine;
 use App\Models\SparePart;
 use App\Models\State;
 use App\Models\User;
-use App\Models\DeliveryNote;
+use App\Services\DeliveryNoteWorkflow;
+use App\Support\Validation\WorkshopRules;
 use Illuminate\Http\Request;
 
 class DeliveryNoteController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(DeliveryNote::class, 'deliverynote');
+    }
+
     public function index()
     {
         // Eager loading para evitar N+1
@@ -24,7 +31,7 @@ class DeliveryNoteController extends Controller
             'bar:id,name',
             'machine:id,alias',
         ])->latest() // por fecha de creación
-        ->paginate(10);
+            ->paginate(10);
 
         return view('deliverynotes.index', compact('deliverynotes'));
     }
@@ -32,11 +39,11 @@ class DeliveryNoteController extends Controller
     public function create()
     {
         $spareparts = SparePart::orderBy('name')->get(['id', 'name']);
-        $states     = State::orderBy('name')->get(['id', 'name']);
-        $locals     = Local::orderBy('name')->get(['id', 'name']);
-        $bars       = Bar::orderBy('name')->get(['id', 'name']);
-        $machines   = Machine::orderBy('alias')->get(['id', 'alias as name']); // alias como name para el select
-        $users      = User::orderBy('name')->get(['id', 'name']);
+        $states = State::orderBy('name')->get(['id', 'name']);
+        $locals = Local::orderBy('name')->get(['id', 'name']);
+        $bars = Bar::orderBy('name')->get(['id', 'name']);
+        $machines = Machine::orderBy('alias')->get(['id', 'alias as name']); // alias como name para el select
+        $users = User::orderBy('name')->get(['id', 'name']);
 
         return view('deliverynotes.create', compact(
             'spareparts',
@@ -48,19 +55,14 @@ class DeliveryNoteController extends Controller
         ));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, DeliveryNoteWorkflow $workflow)
     {
-        $data = $request->validate([
-            'spare_part_id' => ['nullable', 'exists:spare_parts,id'],
-            'state_id'      => ['nullable', 'exists:states,id'],
-            'local_id'      => ['nullable', 'exists:locals,id'],
-            'bar_id'        => ['nullable', 'exists:bars,id'],
-            'machine_id'    => ['nullable', 'exists:machines,id'],
-            'user_id'       => ['nullable', 'exists:users,id'],
-            'comment'       => ['nullable', 'string', 'max:2000'],
-        ]);
+        $data = $request->validate(WorkshopRules::deliveryNote(
+            $request->input('local_id'),
+            $request->input('bar_id'),
+        ));
 
-        DeliveryNote::create($data);
+        $workflow->create($data);
 
         return redirect()
             ->route('deliverynotes.index')
@@ -70,11 +72,11 @@ class DeliveryNoteController extends Controller
     public function edit(DeliveryNote $deliverynote)
     {
         $spareparts = SparePart::orderBy('name')->get(['id', 'name']);
-        $states     = State::orderBy('name')->get(['id', 'name']);
-        $locals     = Local::orderBy('name')->get(['id', 'name']);
-        $bars       = Bar::orderBy('name')->get(['id', 'name']);
-        $machines   = Machine::orderBy('alias')->get(['id', 'alias as name']);
-        $users      = User::orderBy('name')->get(['id', 'name']);
+        $states = State::orderBy('name')->get(['id', 'name']);
+        $locals = Local::orderBy('name')->get(['id', 'name']);
+        $bars = Bar::orderBy('name')->get(['id', 'name']);
+        $machines = Machine::orderBy('alias')->get(['id', 'alias as name']);
+        $users = User::orderBy('name')->get(['id', 'name']);
 
         return view('deliverynotes.edit', compact(
             'deliverynote',
@@ -87,19 +89,17 @@ class DeliveryNoteController extends Controller
         ));
     }
 
-    public function update(Request $request, DeliveryNote $deliverynote)
-    {
-        $data = $request->validate([
-            'spare_part_id' => ['nullable', 'exists:spare_parts,id'],
-            'state_id'      => ['nullable', 'exists:states,id'],
-            'local_id'      => ['nullable', 'exists:locals,id'],
-            'bar_id'        => ['nullable', 'exists:bars,id'],
-            'machine_id'    => ['nullable', 'exists:machines,id'],
-            'user_id'       => ['nullable', 'exists:users,id'],
-            'comment'       => ['nullable', 'string', 'max:2000'],
-        ]);
+    public function update(
+        Request $request,
+        DeliveryNote $deliverynote,
+        DeliveryNoteWorkflow $workflow,
+    ) {
+        $data = $request->validate(WorkshopRules::deliveryNote(
+            $request->input('local_id'),
+            $request->input('bar_id'),
+        ));
 
-        $deliverynote->update($data);
+        $workflow->update($deliverynote, $data);
 
         return redirect()
             ->route('deliverynotes.index')
